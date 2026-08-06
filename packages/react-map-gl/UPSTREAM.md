@@ -54,8 +54,11 @@ Not included in the initial binding. The pinned upstream legacy entry targets Ma
 ## Upstream test disposition
 
 The complete upstream `modules/react-mapbox/test`,
-`modules/react-maplibre/test`, and root export test trees are vendored as the
-future parity oracle, but they are not yet ported or executed. The current
+`modules/react-maplibre/test`, legacy `modules/main/test`, and root test trees
+are vendored as the future parity oracle. `audit/upstream-tests.json` records a
+checked disposition and reason for all 43 upstream test artifacts; the integrity
+command fails if a pinned artifact is added, removed, duplicated, or left
+unclassified. Applicable cases are not yet ported or executed. The current
 `tests/conformance/exports.test.ts` and `lifecycle.test.tsx` cases are
 Octane-only package-contract tests and are not React-parity evidence.
 

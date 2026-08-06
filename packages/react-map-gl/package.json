@@ -40,7 +40,7 @@
   "scripts": {
     "test": "pnpm upstream:check && vitest run --root ../.. --project react-map-gl --project react-map-gl-ssr",
     "upstream:sync": "node scripts/sync-upstream.mjs",
-    "upstream:check": "node scripts/check-upstream.mjs",
+    "upstream:check": "node scripts/check-upstream.mjs && node scripts/check-test-disposition.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "peerDependencies": {
