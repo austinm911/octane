@@ -1,0 +1,789 @@
+{
+  "id": "@deck.gl/react@9.3.7",
+  "name": "@deck.gl/react",
+  "version": "9.3.7",
+  "size": 44368,
+  "unpackedSize": 180655,
+  "shasum": "28407f24265437cd731ac4be6219b44aa93c502a",
+  "integrity": "sha512-lC86Daz/3d/cSX2qpyqKc0Ju+OJZVaQ+K9JyrYp76Zqzi4qej0plDWkkRNyo0pAvzL5LSaIpJpGO45QusgbtSw==",
+  "filename": "deck.gl-react-9.3.7.tgz",
+  "files": [
+    {
+      "path": "LICENSE",
+      "size": 1055,
+      "mode": 420
+    },
+    {
+      "path": "README.md",
+      "size": 96,
+      "mode": 420
+    },
+    {
+      "path": "dist/deckgl.d.ts",
+      "size": 1225,
+      "mode": 420
+    },
+    {
+      "path": "dist/deckgl.d.ts.map",
+      "size": 1329,
+      "mode": 420
+    },
+    {
+      "path": "dist/deckgl.js",
+      "size": 9793,
+      "mode": 420
+    },
+    {
+      "path": "dist/deckgl.js.map",
+      "size": 6295,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.cjs",
+      "size": 20294,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.cjs.map",
+      "size": 46676,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.d.ts",
+      "size": 2050,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.d.ts.map",
+      "size": 1289,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.js",
+      "size": 1572,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.js.map",
+      "size": 971,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/deckgl-context.d.ts",
+      "size": 468,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/deckgl-context.d.ts.map",
+      "size": 527,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/deckgl-context.js",
+      "size": 141,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/deckgl-context.js.map",
+      "size": 225,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/evaluate-children.d.ts",
+      "size": 304,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/evaluate-children.d.ts.map",
+      "size": 418,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/evaluate-children.js",
+      "size": 1390,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/evaluate-children.js.map",
+      "size": 1273,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/extract-jsx-layers.d.ts",
+      "size": 1123,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/extract-jsx-layers.d.ts.map",
+      "size": 936,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/extract-jsx-layers.js",
+      "size": 3536,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/extract-jsx-layers.js.map",
+      "size": 2944,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/extract-styles.d.ts",
+      "size": 338,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/extract-styles.d.ts.map",
+      "size": 475,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/extract-styles.js",
+      "size": 1023,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/extract-styles.js.map",
+      "size": 868,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/inherits-from.d.ts",
+      "size": 121,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/inherits-from.d.ts.map",
+      "size": 221,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/inherits-from.js",
+      "size": 384,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/inherits-from.js.map",
+      "size": 398,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/position-children-under-views.d.ts",
+      "size": 514,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/position-children-under-views.d.ts.map",
+      "size": 618,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/position-children-under-views.js",
+      "size": 3508,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/position-children-under-views.js.map",
+      "size": 2699,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/use-isomorphic-layout-effect.d.ts",
+      "size": 206,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/use-isomorphic-layout-effect.d.ts.map",
+      "size": 256,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/use-isomorphic-layout-effect.js",
+      "size": 490,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/use-isomorphic-layout-effect.js.map",
+      "size": 379,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/use-widget.d.ts",
+      "size": 298,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/use-widget.d.ts.map",
+      "size": 361,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/use-widget.js",
+      "size": 1552,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/use-widget.js.map",
+      "size": 1371,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/compass-widget.d.ts",
+      "size": 178,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/compass-widget.d.ts.map",
+      "size": 226,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/compass-widget.js",
+      "size": 347,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/compass-widget.js.map",
+      "size": 386,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/context-menu-widget.d.ts",
+      "size": 246,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/context-menu-widget.d.ts.map",
+      "size": 249,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/context-menu-widget.js",
+      "size": 335,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/context-menu-widget.js.map",
+      "size": 374,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/fullscreen-widget.d.ts",
+      "size": 190,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/fullscreen-widget.d.ts.map",
+      "size": 234,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/fullscreen-widget.js",
+      "size": 362,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/fullscreen-widget.js.map",
+      "size": 400,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/geocoder-widget.d.ts",
+      "size": 231,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/geocoder-widget.d.ts.map",
+      "size": 239,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/geocoder-widget.js",
+      "size": 383,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/geocoder-widget.js.map",
+      "size": 389,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/gimbal-widget.d.ts",
+      "size": 174,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/gimbal-widget.d.ts.map",
+      "size": 224,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/gimbal-widget.js",
+      "size": 342,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/gimbal-widget.js.map",
+      "size": 384,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/icon-widget.d.ts",
+      "size": 165,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/icon-widget.d.ts.map",
+      "size": 216,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/icon-widget.js",
+      "size": 327,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/icon-widget.js.map",
+      "size": 375,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/info-widget.d.ts",
+      "size": 210,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/info-widget.d.ts.map",
+      "size": 227,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/info-widget.js",
+      "size": 372,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/info-widget.js.map",
+      "size": 386,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/loading-widget.d.ts",
+      "size": 226,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/loading-widget.d.ts.map",
+      "size": 237,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/loading-widget.js",
+      "size": 395,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/loading-widget.js.map",
+      "size": 397,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/popup-widget.d.ts",
+      "size": 169,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/popup-widget.d.ts.map",
+      "size": 222,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/popup-widget.js",
+      "size": 332,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/popup-widget.js.map",
+      "size": 377,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/reset-view-widget.d.ts",
+      "size": 237,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/reset-view-widget.d.ts.map",
+      "size": 243,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/reset-view-widget.js",
+      "size": 408,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/reset-view-widget.js.map",
+      "size": 407,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/scale-widget.d.ts",
+      "size": 216,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/scale-widget.d.ts.map",
+      "size": 233,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/scale-widget.js",
+      "size": 368,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/scale-widget.js.map",
+      "size": 383,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/screenshot-widget.d.ts",
+      "size": 241,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/screenshot-widget.d.ts.map",
+      "size": 245,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/screenshot-widget.js",
+      "size": 413,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/screenshot-widget.js.map",
+      "size": 411,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/scrollbar-widget.d.ts",
+      "size": 186,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/scrollbar-widget.d.ts.map",
+      "size": 230,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/scrollbar-widget.js",
+      "size": 357,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/scrollbar-widget.js.map",
+      "size": 394,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/selector-widget.d.ts",
+      "size": 206,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/selector-widget.d.ts.map",
+      "size": 255,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/selector-widget.js",
+      "size": 347,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/selector-widget.js.map",
+      "size": 385,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/splitter-widget.d.ts",
+      "size": 230,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/splitter-widget.d.ts.map",
+      "size": 239,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/splitter-widget.js",
+      "size": 378,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/splitter-widget.js.map",
+      "size": 384,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/stats-widget.d.ts",
+      "size": 170,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/stats-widget.d.ts.map",
+      "size": 222,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/stats-widget.js",
+      "size": 322,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/stats-widget.js.map",
+      "size": 372,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/theme-widget.d.ts",
+      "size": 216,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/theme-widget.d.ts.map",
+      "size": 233,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/theme-widget.js",
+      "size": 383,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/theme-widget.js.map",
+      "size": 393,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/timeline-widget.d.ts",
+      "size": 182,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/timeline-widget.d.ts.map",
+      "size": 228,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/timeline-widget.js",
+      "size": 334,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/timeline-widget.js.map",
+      "size": 378,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/toggle-widget.d.ts",
+      "size": 173,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/toggle-widget.d.ts.map",
+      "size": 224,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/toggle-widget.js",
+      "size": 337,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/toggle-widget.js.map",
+      "size": 379,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/zoom-widget.d.ts",
+      "size": 166,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/zoom-widget.d.ts.map",
+      "size": 216,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/zoom-widget.js",
+      "size": 332,
+      "mode": 420
+    },
+    {
+      "path": "dist/widgets/zoom-widget.js.map",
+      "size": 380,
+      "mode": 420
+    },
+    {
+      "path": "package.json",
+      "size": 1009,
+      "mode": 420
+    },
+    {
+      "path": "src/deckgl.ts",
+      "size": 11024,
+      "mode": 420
+    },
+    {
+      "path": "src/index.ts",
+      "size": 2033,
+      "mode": 420
+    },
+    {
+      "path": "src/utils/deckgl-context.ts",
+      "size": 446,
+      "mode": 420
+    },
+    {
+      "path": "src/utils/evaluate-children.ts",
+      "size": 1495,
+      "mode": 420
+    },
+    {
+      "path": "src/utils/extract-jsx-layers.ts",
+      "size": 4238,
+      "mode": 420
+    },
+    {
+      "path": "src/utils/extract-styles.ts",
+      "size": 1130,
+      "mode": 420
+    },
+    {
+      "path": "src/utils/inherits-from.ts",
+      "size": 342,
+      "mode": 420
+    },
+    {
+      "path": "src/utils/position-children-under-views.ts",
+      "size": 3536,
+      "mode": 420
+    },
+    {
+      "path": "src/utils/use-isomorphic-layout-effect.ts",
+      "size": 435,
+      "mode": 420
+    },
+    {
+      "path": "src/utils/use-widget.ts",
+      "size": 1575,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/compass-widget.tsx",
+      "size": 374,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/context-menu-widget.tsx",
+      "size": 364,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/fullscreen-widget.tsx",
+      "size": 392,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/geocoder-widget.tsx",
+      "size": 411,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/gimbal-widget.tsx",
+      "size": 368,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/icon-widget.tsx",
+      "size": 351,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/info-widget.tsx",
+      "size": 396,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/loading-widget.tsx",
+      "size": 422,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/popup-widget.tsx",
+      "size": 357,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/reset-view-widget.tsx",
+      "size": 436,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/scale-widget.tsx",
+      "size": 393,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/screenshot-widget.tsx",
+      "size": 443,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/scrollbar-widget.tsx",
+      "size": 386,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/selector-widget.tsx",
+      "size": 485,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/splitter-widget.tsx",
+      "size": 406,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/stats-widget.tsx",
+      "size": 347,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/theme-widget.tsx",
+      "size": 408,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/timeline-widget.tsx",
+      "size": 362,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/toggle-widget.tsx",
+      "size": 363,
+      "mode": 420
+    },
+    {
+      "path": "src/widgets/zoom-widget.tsx",
+      "size": 356,
+      "mode": 420
+    }
+  ],
+  "entryCount": 155,
+  "bundled": []
+}

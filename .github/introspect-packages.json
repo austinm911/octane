@@ -1,0 +1,7 @@
+{
+  "packages": [
+    "@deck.gl/react@9.3.7",
+    "@deck.gl/core@9.3.7",
+    "@deck.gl/widgets@9.3.7"
+  ]
+}
