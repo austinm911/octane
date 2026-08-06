@@ -1,0 +1,7 @@
+{
+  "packages": [
+    "@mapbox/search-js-react@1.5.1",
+    "@mapbox/search-js-web@1.5.1",
+    "@mapbox/search-js-core@1.5.1"
+  ]
+}
