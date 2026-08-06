@@ -3,12 +3,16 @@
     "package": "react-map-gl",
     "version": "8.1.1"
   },
-  "surface": "Initial Mapbox GL JS 3.5+ and MapLibre GL JS 4+ entry points with an authored Octane component layer; parity verification and browser/WebGL coverage remain in progress.",
+  "surface": "Initial Mapbox GL JS 3.5+ and MapLibre GL JS 4+ entry points with an authored Octane component layer; MapLibre production WebGL, lifecycle, SSR, and public API smoke coverage are verified while exhaustive upstream parity remains in progress.",
   "divergences": [
     "Refs are passed as ordinary props instead of React forwardRef wrappers.",
     "React StrictMode's development-only double mount is not reproduced.",
     "The upstream mapbox-legacy entry is not included; Mapbox GL JS 1.13 requires a separate controller and type boundary."
   ],
   "ssr": "The component renders its container during SSR and imports/constructs the selected WebGL map library only in a client effect. Child map components mount after the map instance is available.",
-  "verified": "2026-08-05"
+  "verified": "2026-08-05",
+  "notes": [
+    "The token-free MapLibre production browser lane compiles authored source with Vite and verifies construction, controls, overlays, style data, teardown, and remount.",
+    "A token-backed modern Mapbox browser lane and exhaustive pristine/adapted upstream parity lanes remain follow-up work."
+  ]
 }

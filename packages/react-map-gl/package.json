@@ -38,10 +38,11 @@
     "./maplibre": "./src/maplibre.tsx"
   },
   "scripts": {
-    "test": "pnpm upstream:check && vitest run --root ../.. --project react-map-gl --project react-map-gl-ssr",
+    "test": "pnpm upstream:check && vitest run --root ../.. --project react-map-gl --project react-map-gl-ssr --project react-map-gl-browser",
     "upstream:sync": "node scripts/sync-upstream.mjs",
     "upstream:check": "node scripts/check-upstream.mjs && node scripts/check-test-disposition.mjs",
-    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json",
+    "test:browser": "vitest run --root ../.. --project react-map-gl-browser"
   },
   "peerDependencies": {
     "mapbox-gl": ">=3.5.0",
@@ -58,9 +59,12 @@
   },
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
+    "@octanejs/vite-plugin": "workspace:*",
     "mapbox-gl": "3.9.0",
     "maplibre-gl": "5.0.0",
     "octane": "workspace:*",
+    "playwright": "catalog:default",
+    "vite": "catalog:default",
     "vitest": "catalog:default"
   }
 }

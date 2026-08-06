@@ -92,13 +92,13 @@ export function MapRoot(props: InternalMapProps) {
 
 	return (
 		<div id={props.id} ref={containerRef} style={style}>
-			{controller ? (
-				<MapContext.Provider value={contextValueRef.current}>
-					<div {...props.engine.childAttributes} style={CHILD_CONTAINER_STYLE}>
+			<div {...props.engine.childAttributes} style={CHILD_CONTAINER_STYLE}>
+				{controller ? (
+					<MapContext.Provider value={contextValueRef.current}>
 						{props.children}
-					</div>
-				</MapContext.Provider>
-			) : null}
+					</MapContext.Provider>
+				) : null}
+			</div>
 		</div>
 	);
 }

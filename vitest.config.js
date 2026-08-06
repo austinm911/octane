@@ -2331,7 +2331,10 @@ export default defineConfig({
 						'packages/react-map-gl/tests/**/*.test.ts',
 						'packages/react-map-gl/tests/**/*.test.tsx',
 					],
-					exclude: ['packages/react-map-gl/tests/ssr/**/*.test.ts'],
+					exclude: [
+						'packages/react-map-gl/tests/browser/**/*.test.ts',
+						'packages/react-map-gl/tests/ssr/**/*.test.ts',
+					],
 					environment: 'jsdom',
 					globals: false,
 				},
@@ -2347,6 +2350,14 @@ export default defineConfig({
 							replacement: resolve(import.meta.dirname, 'packages/react-map-gl/src/maplibre.tsx'),
 						},
 					],
+				},
+			},
+			{
+				test: {
+					name: 'react-map-gl-browser',
+					include: ['packages/react-map-gl/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
 				},
 			},
 			{

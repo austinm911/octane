@@ -58,9 +58,7 @@ The complete upstream `modules/react-mapbox/test`,
 are vendored as the future parity oracle. `audit/upstream-tests.json` records a
 checked disposition and reason for all 43 upstream test artifacts; the integrity
 command fails if a pinned artifact is added, removed, duplicated, or left
-unclassified. Applicable cases are not yet ported or executed. The current
-`tests/conformance/exports.test.ts` and `lifecycle.test.tsx` cases are
-Octane-only package-contract tests and are not React-parity evidence.
+unclassified. Applicable cases are not yet ported or executed. The current conformance and SSR suites are Octane-owned package-contract tests and are not React-parity evidence. The production MapLibre browser fixture compiles authored package source with Vite and proves real WebGL construction, controls, Marker, Source/Layer attachment, teardown, and remount under Chromium; it is integration evidence, not a substitute for the unported upstream browser/render matrix.
 
 Before parity can be claimed, every vendored test artifact needs a recorded
 disposition, applicable controller suites must run unchanged, React component
