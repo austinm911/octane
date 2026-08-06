@@ -89,6 +89,6 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add .introspection
+          git add -f .introspection
           git commit -m "chore: unpack pinned npm package evidence"
           git push origin "HEAD:$HEAD_BRANCH"
