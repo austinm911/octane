@@ -1,0 +1,68 @@
+{
+  "name": "@octanejs/react-map-gl",
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
+  },
+  "description": "Octane bindings for react-map-gl, covering Mapbox GL JS and MapLibre GL JS.",
+  "author": {
+    "name": "Dominic Gannaway",
+    "email": "dg@domgan.com"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/octanejs/octane.git",
+    "directory": "packages/react-map-gl"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md",
+    "UPSTREAM.md"
+  ],
+  "exports": {
+    "./mapbox": "./src/mapbox.tsx",
+    "./maplibre": "./src/maplibre.tsx",
+    "./mapbox-legacy": "./src/mapbox-legacy.tsx"
+  },
+  "scripts": {
+    "test": "pnpm upstream:check && vitest run --config vitest.config.ts",
+    "upstream:sync": "node scripts/sync-upstream.mjs",
+    "upstream:check": "node scripts/check-upstream.mjs",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
+  },
+  "peerDependencies": {
+    "mapbox-gl": ">=1.13.0",
+    "maplibre-gl": ">=4.0.0",
+    "octane": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "mapbox-gl": {
+      "optional": true
+    },
+    "maplibre-gl": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@octanejs/testing-library": "workspace:*",
+    "mapbox-gl": "3.9.0",
+    "mapbox-gl-v1": "npm:mapbox-gl@1.13.0",
+    "maplibre-gl": "5.0.0",
+    "octane": "workspace:*",
+    "vitest": "catalog:default"
+  }
+}
