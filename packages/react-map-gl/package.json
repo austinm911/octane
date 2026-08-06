@@ -38,7 +38,7 @@
     "./maplibre": "./src/maplibre.tsx"
   },
   "scripts": {
-    "test": "pnpm upstream:check && vitest run --root ../.. --project react-map-gl",
+    "test": "pnpm upstream:check && vitest run --root ../.. --project react-map-gl --project react-map-gl-ssr",
     "upstream:sync": "node scripts/sync-upstream.mjs",
     "upstream:check": "node scripts/check-upstream.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
