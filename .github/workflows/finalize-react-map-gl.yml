@@ -1,0 +1,55 @@
+name: Finalize react-map-gl integration
+
+on:
+  pull_request:
+    branches: [ci/react-map-gl-finalize]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Patch root integration
+        run: git show origin/ci/react-map-gl-finalize:scripts/finalize-react-map-gl.py | python
+      - name: Install and regenerate repository state
+        run: |
+          corepack enable
+          pnpm install --no-frozen-lockfile
+          pnpm sync
+      - name: Format changed integration files
+        run: |
+          pnpm format:files vitest.config.js packages/octane-mcp-server/src/bridge.js packages/octane-mcp-server/src/bridge.test.js website/public/llms.txt
+      - name: Validate package and root project
+        run: |
+          pnpm exec tsrx-tsc --noEmit -p packages/react-map-gl/tsconfig.json
+          pnpm exec tsrx-tsc --noEmit -p packages/react-map-gl/typetests/tsconfig.json
+          pnpm --dir packages/react-map-gl test
+          pnpm exec vitest run --project react-map-gl
+          pnpm exec vitest run packages/octane-mcp-server/src/bridge.test.js
+          pnpm react-parity:test
+      - name: Check generated state and formatting
+        run: |
+          pnpm packages:inventory:check
+          pnpm bindings:status:check
+          pnpm binding-parity:gaps:check
+          pnpm cli:data:check
+          pnpm format:files:check vitest.config.js packages/octane-mcp-server/src/bridge.js packages/octane-mcp-server/src/bridge.test.js website/public/llms.txt
+      - name: Amend the single feature commit
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit --amend --no-edit
+          git push --force-with-lease origin "HEAD:$HEAD_BRANCH"
