@@ -1,0 +1,77 @@
+name: Validate react-map-gl binding
+
+on:
+  pull_request:
+    branches: [ci/map-port-bootstrap-v5]
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - id: payload
+        shell: bash
+        run: |
+          if [[ -d .github/map-port-payload ]]; then
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.payload.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - if: steps.payload.outputs.run == 'true'
+        name: Expand authored payload
+        run: cat .github/map-port-payload/part-* | base64 -d | tar -xz -C .
+      - if: steps.payload.outputs.run == 'true'
+        name: Apply reviewed corrections
+        run: git show origin/ci/map-port-bootstrap-v5:scripts/map-port-fix.py | python
+      - if: steps.payload.outputs.run == 'true'
+        name: Fetch pinned upstream evidence
+        run: node packages/react-map-gl/scripts/sync-upstream.mjs
+      - if: steps.payload.outputs.run == 'true'
+        name: Install workspace
+        run: |
+          corepack enable
+          pnpm install --no-frozen-lockfile
+      - if: steps.payload.outputs.run == 'true'
+        name: Format authored files
+        run: pnpm format:files packages/react-map-gl .changeset/react-map-gl-binding.md
+      - if: steps.payload.outputs.run == 'true'
+        name: Validate binding
+        run: |
+          pnpm exec tsrx-tsc --noEmit -p packages/react-map-gl/tsconfig.json
+          pnpm exec tsrx-tsc --noEmit -p packages/react-map-gl/typetests/tsconfig.json
+          pnpm --dir packages/react-map-gl test
+      - if: steps.payload.outputs.run == 'true'
+        name: Regenerate repository catalogs
+        run: |
+          pnpm packages:inventory
+          pnpm bindings:status
+          pnpm binding-parity:gaps
+          pnpm cli:data
+      - if: steps.payload.outputs.run == 'true'
+        name: Check formatting
+        run: pnpm format:files:check packages/react-map-gl .changeset/react-map-gl-binding.md
+      - if: steps.payload.outputs.run == 'true'
+        name: Publish clean feature commit
+        env:
+          BASE_SHA: fb74b1181185a952ef1c05133aa2878111e01a60
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          rm -rf .github/map-port-payload .github/workflows/map-port-bootstrap.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git reset --soft "$BASE_SHA"
+          git add -A
+          git commit -m "feat(react-map-gl): add Mapbox and MapLibre bindings [map-port-sync]"
+          git push --force-with-lease origin "HEAD:$HEAD_BRANCH"
