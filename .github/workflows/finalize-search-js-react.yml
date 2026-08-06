@@ -1,0 +1,79 @@
+name: Validate Search JS React binding
+
+on:
+  pull_request:
+    branches: [ci/search-js-react-finalize]
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+      - id: payload
+        shell: bash
+        run: |
+          if [[ -f .github/search-port-payload.b64 ]]; then
+            echo 'run=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'run=false' >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.payload.outputs.run == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - if: steps.payload.outputs.run == 'true'
+        name: Expand authored package and patch root integration
+        run: |
+          base64 -d .github/search-port-payload.b64 | tar -xz -C .
+          git show origin/ci/search-js-react-finalize:scripts/finalize-search-js-react.py | python
+      - if: steps.payload.outputs.run == 'true'
+        name: Fetch and verify pinned upstream evidence
+        run: node packages/search-js-react/scripts/sync-upstream.mjs
+      - if: steps.payload.outputs.run == 'true'
+        name: Install and regenerate repository state
+        run: |
+          corepack enable
+          pnpm install --no-frozen-lockfile
+          pnpm sync
+      - if: steps.payload.outputs.run == 'true'
+        name: Format authored and integration files
+        run: |
+          pnpm format:files packages/search-js-react .changeset/search-js-react-binding.md vitest.config.js packages/octane-mcp-server/src/bridge.js packages/octane-mcp-server/src/bridge.test.js website/src/content/bindings.json
+      - if: steps.payload.outputs.run == 'true'
+        name: Validate package and root project
+        run: |
+          pnpm exec tsrx-tsc --noEmit -p packages/search-js-react/tsconfig.json
+          pnpm exec tsrx-tsc --noEmit -p packages/search-js-react/typetests/tsconfig.json
+          pnpm --dir packages/search-js-react test
+          pnpm exec vitest run --project search-js-react
+          pnpm exec vitest run packages/octane-mcp-server/src/bridge.test.js
+          pnpm react-parity:test
+      - if: steps.payload.outputs.run == 'true'
+        name: Check generated state and formatting
+        run: |
+          pnpm packages:inventory:check
+          pnpm bindings:status:check
+          pnpm binding-parity:gaps:check
+          pnpm cli:data:check
+          pnpm format:files:check packages/search-js-react .changeset/search-js-react-binding.md vitest.config.js packages/octane-mcp-server/src/bridge.js packages/octane-mcp-server/src/bridge.test.js website/src/content/bindings.json
+      - if: steps.payload.outputs.run == 'true'
+        name: Publish one clean feature commit
+        env:
+          BASE_SHA: fb74b1181185a952ef1c05133aa2878111e01a60
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          rm -f .github/search-port-payload.b64
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git reset --soft "$BASE_SHA"
+          git add -A
+          git commit -m "feat(search-js-react): add Mapbox Search JS bindings [search-js-sync]"
+          git push --force-with-lease origin "HEAD:$HEAD_BRANCH"
