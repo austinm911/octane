@@ -6,7 +6,7 @@
 - Release: `v8.1.1`
 - Commit: `f295bd524e01b7fc0fb9c9e9d1d5bd47b055b67d`
 - Packages: `react-map-gl@8.1.1`, `@vis.gl/react-mapbox@8.1.1`, `@vis.gl/react-maplibre@8.1.1`
-- Oracle engines: `mapbox-gl@3.9.0`, `mapbox-gl@1.13.0`, `maplibre-gl@5.0.0`
+- Oracle engines: `mapbox-gl@3.9.0`, `maplibre-gl@5.0.0`
 - License: MIT
 
 `pnpm upstream:sync` checks out the immutable tag, verifies the commit, vendors
@@ -49,22 +49,20 @@ upgrade rather than an unpinned addition here.
 
 ### `react-map-gl/mapbox-legacy`
 
-The complete public component surface is available. The Octane binding uses the
-same component implementation against the pinned `mapbox-gl@1.13.0` oracle.
-React legacy implementation internals are not copied; observable compatibility
-is the test target.
+Not included in the initial binding. The pinned upstream legacy entry targets Mapbox GL JS 1.13 and has a distinct controller/type boundary; re-exporting the modern Mapbox implementation would make an unsupported compatibility claim. Legacy support requires its own implementation and oracle/browser lanes.
 
 ## Upstream test disposition
 
 The complete upstream `modules/react-mapbox/test`,
-`modules/react-maplibre/test`, and root export test trees are vendored. Ported
-cases live under `tests/upstream/` and preserve upstream case names and source
-citations. Framework-neutral utility/controller tests run against the copied
-core. Browser/WebGL cases run in the package browser lane. React renderer,
-StrictMode-only, and React ref-object implementation assertions are classified
-as not applicable; their observable lifecycle behavior is covered by Octane
-conformance tests instead.
+`modules/react-maplibre/test`, and root export test trees are vendored as the
+future parity oracle, but they are not yet ported or executed. The current
+`tests/conformance/exports.test.ts` and `lifecycle.test.tsx` cases are
+Octane-only package-contract tests and are not React-parity evidence.
 
-The first PR intentionally remains a draft until the vendored case inventory,
-negative controls, browser engine matrix, and adapted type-test ledger are all
-executing in the generic parity lanes. No unexecuted case is counted as parity.
+Before parity can be claimed, every vendored test artifact needs a recorded
+disposition, applicable controller suites must run unchanged, React component
+cases must be adapted under `tests/upstream/`, and pristine/adapted runtime and
+type lanes plus browser/WebGL lanes must be registered in
+`audit/react-parity.json`. The first PR remains a draft until those inventories,
+negative controls, engine matrix, and type-test ledger execute through the
+generic parity harness. No unexecuted case is counted as parity.

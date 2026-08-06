@@ -35,17 +35,16 @@
   ],
   "exports": {
     "./mapbox": "./src/mapbox.tsx",
-    "./maplibre": "./src/maplibre.tsx",
-    "./mapbox-legacy": "./src/mapbox-legacy.tsx"
+    "./maplibre": "./src/maplibre.tsx"
   },
   "scripts": {
-    "test": "pnpm upstream:check && vitest run --config vitest.config.ts",
+    "test": "pnpm upstream:check && vitest run --root ../.. --project react-map-gl",
     "upstream:sync": "node scripts/sync-upstream.mjs",
     "upstream:check": "node scripts/check-upstream.mjs",
     "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json"
   },
   "peerDependencies": {
-    "mapbox-gl": ">=1.13.0",
+    "mapbox-gl": ">=3.5.0",
     "maplibre-gl": ">=4.0.0",
     "octane": "workspace:*"
   },
@@ -60,7 +59,6 @@
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
     "mapbox-gl": "3.9.0",
-    "mapbox-gl-v1": "npm:mapbox-gl@1.13.0",
     "maplibre-gl": "5.0.0",
     "octane": "workspace:*",
     "vitest": "catalog:default"

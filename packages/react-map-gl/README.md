@@ -26,8 +26,7 @@ export function PropertyMap() {
 }
 ```
 
-Use `@octanejs/react-map-gl/maplibre` with `maplibre-gl` for MapLibre. The
-`mapbox-legacy` entry is retained for the upstream Mapbox GL JS 1.13 surface.
+Use `@octanejs/react-map-gl/maplibre` with `maplibre-gl` for MapLibre. Mapbox GL JS 1.x is not supported by the initial binding; its controller and type boundary differs from the modern Mapbox implementation.
 
 The public component names and engine-specific types mirror the pinned upstream
 entry points. Refs are ordinary Octane props rather than `forwardRef` wrappers.
