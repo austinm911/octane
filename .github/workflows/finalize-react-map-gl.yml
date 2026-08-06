@@ -28,7 +28,7 @@ jobs:
           pnpm sync
       - name: Format changed integration files
         run: |
-          pnpm format:files vitest.config.js packages/octane-mcp-server/src/bridge.js packages/octane-mcp-server/src/bridge.test.js website/public/llms.txt
+          pnpm format:files vitest.config.js packages/octane-mcp-server/src/bridge.js packages/octane-mcp-server/src/bridge.test.js
       - name: Validate package and root project
         run: |
           pnpm exec tsrx-tsc --noEmit -p packages/react-map-gl/tsconfig.json
@@ -43,7 +43,7 @@ jobs:
           pnpm bindings:status:check
           pnpm binding-parity:gaps:check
           pnpm cli:data:check
-          pnpm format:files:check vitest.config.js packages/octane-mcp-server/src/bridge.js packages/octane-mcp-server/src/bridge.test.js website/public/llms.txt
+          pnpm format:files:check vitest.config.js packages/octane-mcp-server/src/bridge.js packages/octane-mcp-server/src/bridge.test.js
       - name: Amend the single feature commit
         env:
           HEAD_BRANCH: ${{ github.head_ref }}
