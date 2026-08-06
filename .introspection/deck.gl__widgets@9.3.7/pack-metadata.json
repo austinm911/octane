@@ -1,0 +1,859 @@
+{
+  "id": "@deck.gl/widgets@9.3.7",
+  "name": "@deck.gl/widgets",
+  "version": "9.3.7",
+  "size": 250780,
+  "unpackedSize": 1121957,
+  "shasum": "969be64faed728f6aa3de8e55ceef90b2dcae9f7",
+  "integrity": "sha512-Ygvn6XRQfh8hDnVczZNrh/nmKXdptavT/KmDzrBJbJaP8Upi/4bgo9p8pe1u7qZagCprzSfo/tKumRN1BNOWhg==",
+  "filename": "deck.gl-widgets-9.3.7.tgz",
+  "files": [
+    {
+      "path": "LICENSE",
+      "size": 1055,
+      "mode": 420
+    },
+    {
+      "path": "README.md",
+      "size": 187,
+      "mode": 420
+    },
+    {
+      "path": "dist.min.js",
+      "size": 85250,
+      "mode": 420
+    },
+    {
+      "path": "dist/compass-widget.d.ts",
+      "size": 1485,
+      "mode": 420
+    },
+    {
+      "path": "dist/compass-widget.d.ts.map",
+      "size": 1076,
+      "mode": 420
+    },
+    {
+      "path": "dist/compass-widget.js",
+      "size": 3463,
+      "mode": 420
+    },
+    {
+      "path": "dist/compass-widget.js.map",
+      "size": 3263,
+      "mode": 420
+    },
+    {
+      "path": "dist/context-menu-widget.d.ts",
+      "size": 1704,
+      "mode": 420
+    },
+    {
+      "path": "dist/context-menu-widget.d.ts.map",
+      "size": 1266,
+      "mode": 420
+    },
+    {
+      "path": "dist/context-menu-widget.js",
+      "size": 2585,
+      "mode": 420
+    },
+    {
+      "path": "dist/context-menu-widget.js.map",
+      "size": 2590,
+      "mode": 420
+    },
+    {
+      "path": "dist/dist.dev.js",
+      "size": 181595,
+      "mode": 420
+    },
+    {
+      "path": "dist/fullscreen-widget.d.ts",
+      "size": 1660,
+      "mode": 420
+    },
+    {
+      "path": "dist/fullscreen-widget.d.ts.map",
+      "size": 981,
+      "mode": 420
+    },
+    {
+      "path": "dist/fullscreen-widget.js",
+      "size": 3259,
+      "mode": 420
+    },
+    {
+      "path": "dist/fullscreen-widget.js.map",
+      "size": 2983,
+      "mode": 420
+    },
+    {
+      "path": "dist/geocoder-widget.d.ts",
+      "size": 2610,
+      "mode": 420
+    },
+    {
+      "path": "dist/geocoder-widget.d.ts.map",
+      "size": 1657,
+      "mode": 420
+    },
+    {
+      "path": "dist/geocoder-widget.js",
+      "size": 7351,
+      "mode": 420
+    },
+    {
+      "path": "dist/geocoder-widget.js.map",
+      "size": 5309,
+      "mode": 420
+    },
+    {
+      "path": "dist/gimbal-widget.d.ts",
+      "size": 1581,
+      "mode": 420
+    },
+    {
+      "path": "dist/gimbal-widget.d.ts.map",
+      "size": 1237,
+      "mode": 420
+    },
+    {
+      "path": "dist/gimbal-widget.js",
+      "size": 4933,
+      "mode": 420
+    },
+    {
+      "path": "dist/gimbal-widget.js.map",
+      "size": 4352,
+      "mode": 420
+    },
+    {
+      "path": "dist/icon-widget.d.ts",
+      "size": 1046,
+      "mode": 420
+    },
+    {
+      "path": "dist/icon-widget.d.ts.map",
+      "size": 789,
+      "mode": 420
+    },
+    {
+      "path": "dist/icon-widget.js",
+      "size": 1102,
+      "mode": 420
+    },
+    {
+      "path": "dist/icon-widget.js.map",
+      "size": 1131,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.cjs",
+      "size": 103357,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.cjs.map",
+      "size": 211608,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.d.ts",
+      "size": 3413,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.d.ts.map",
+      "size": 2103,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.js",
+      "size": 2099,
+      "mode": 420
+    },
+    {
+      "path": "dist/index.js.map",
+      "size": 1341,
+      "mode": 420
+    },
+    {
+      "path": "dist/info-widget.d.ts",
+      "size": 2342,
+      "mode": 420
+    },
+    {
+      "path": "dist/info-widget.d.ts.map",
+      "size": 1677,
+      "mode": 420
+    },
+    {
+      "path": "dist/info-widget.js",
+      "size": 3196,
+      "mode": 420
+    },
+    {
+      "path": "dist/info-widget.js.map",
+      "size": 3079,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/button-group.d.ts",
+      "size": 347,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/button-group.d.ts.map",
+      "size": 346,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/button-group.js",
+      "size": 345,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/button-group.js.map",
+      "size": 342,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dropdown-menu.d.ts",
+      "size": 657,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dropdown-menu.d.ts.map",
+      "size": 766,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dropdown-menu.js",
+      "size": 2460,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/dropdown-menu.js.map",
+      "size": 2640,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/icon-button.d.ts",
+      "size": 458,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/icon-button.d.ts.map",
+      "size": 542,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/icon-button.js",
+      "size": 848,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/icon-button.js.map",
+      "size": 908,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/popover.d.ts",
+      "size": 903,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/popover.d.ts.map",
+      "size": 656,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/popover.js",
+      "size": 4322,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/popover.js.map",
+      "size": 4637,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/range-input.d.ts",
+      "size": 887,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/range-input.d.ts.map",
+      "size": 939,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/range-input.js",
+      "size": 11891,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/range-input.js.map",
+      "size": 12077,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/user-content.d.ts",
+      "size": 326,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/user-content.d.ts.map",
+      "size": 407,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/user-content.js",
+      "size": 600,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/components/user-content.js.map",
+      "size": 739,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/data-url.d.ts",
+      "size": 180,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/data-url.d.ts.map",
+      "size": 181,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/data-url.js",
+      "size": 241,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/data-url.js.map",
+      "size": 334,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoder-history.d.ts",
+      "size": 757,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoder-history.d.ts.map",
+      "size": 560,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoder-history.js",
+      "size": 2052,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoder-history.js.map",
+      "size": 1957,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoder.d.ts",
+      "size": 605,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoder.d.ts.map",
+      "size": 458,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoder.js",
+      "size": 127,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoder.js.map",
+      "size": 160,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoders.d.ts",
+      "size": 2281,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoders.d.ts.map",
+      "size": 887,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoders.js",
+      "size": 6881,
+      "mode": 420
+    },
+    {
+      "path": "dist/lib/geocode/geocoders.js.map",
+      "size": 5924,
+      "mode": 420
+    },
+    {
+      "path": "dist/loading-widget.d.ts",
+      "size": 1251,
+      "mode": 420
+    },
+    {
+      "path": "dist/loading-widget.d.ts.map",
+      "size": 874,
+      "mode": 420
+    },
+    {
+      "path": "dist/loading-widget.js",
+      "size": 1678,
+      "mode": 420
+    },
+    {
+      "path": "dist/loading-widget.js.map",
+      "size": 1464,
+      "mode": 420
+    },
+    {
+      "path": "dist/popup-widget.d.ts",
+      "size": 2126,
+      "mode": 420
+    },
+    {
+      "path": "dist/popup-widget.d.ts.map",
+      "size": 1529,
+      "mode": 420
+    },
+    {
+      "path": "dist/popup-widget.js",
+      "size": 3171,
+      "mode": 420
+    },
+    {
+      "path": "dist/popup-widget.js.map",
+      "size": 3031,
+      "mode": 420
+    },
+    {
+      "path": "dist/reset-view-widget.d.ts",
+      "size": 1708,
+      "mode": 420
+    },
+    {
+      "path": "dist/reset-view-widget.d.ts.map",
+      "size": 1233,
+      "mode": 420
+    },
+    {
+      "path": "dist/reset-view-widget.js",
+      "size": 1822,
+      "mode": 420
+    },
+    {
+      "path": "dist/reset-view-widget.js.map",
+      "size": 1600,
+      "mode": 420
+    },
+    {
+      "path": "dist/scale-widget.d.ts",
+      "size": 1418,
+      "mode": 420
+    },
+    {
+      "path": "dist/scale-widget.d.ts.map",
+      "size": 841,
+      "mode": 420
+    },
+    {
+      "path": "dist/scale-widget.js",
+      "size": 5533,
+      "mode": 420
+    },
+    {
+      "path": "dist/scale-widget.js.map",
+      "size": 4140,
+      "mode": 420
+    },
+    {
+      "path": "dist/screenshot-widget.d.ts",
+      "size": 1541,
+      "mode": 420
+    },
+    {
+      "path": "dist/screenshot-widget.d.ts.map",
+      "size": 1018,
+      "mode": 420
+    },
+    {
+      "path": "dist/screenshot-widget.js",
+      "size": 2024,
+      "mode": 420
+    },
+    {
+      "path": "dist/screenshot-widget.js.map",
+      "size": 1771,
+      "mode": 420
+    },
+    {
+      "path": "dist/scrollbar-widget.d.ts",
+      "size": 2719,
+      "mode": 420
+    },
+    {
+      "path": "dist/scrollbar-widget.d.ts.map",
+      "size": 1685,
+      "mode": 420
+    },
+    {
+      "path": "dist/scrollbar-widget.js",
+      "size": 7133,
+      "mode": 420
+    },
+    {
+      "path": "dist/scrollbar-widget.js.map",
+      "size": 7248,
+      "mode": 420
+    },
+    {
+      "path": "dist/selector-widget.d.ts",
+      "size": 1703,
+      "mode": 420
+    },
+    {
+      "path": "dist/selector-widget.d.ts.map",
+      "size": 1252,
+      "mode": 420
+    },
+    {
+      "path": "dist/selector-widget.js",
+      "size": 2575,
+      "mode": 420
+    },
+    {
+      "path": "dist/selector-widget.js.map",
+      "size": 2277,
+      "mode": 420
+    },
+    {
+      "path": "dist/splitter-widget.d.ts",
+      "size": 2651,
+      "mode": 420
+    },
+    {
+      "path": "dist/splitter-widget.d.ts.map",
+      "size": 1801,
+      "mode": 420
+    },
+    {
+      "path": "dist/splitter-widget.js",
+      "size": 8456,
+      "mode": 420
+    },
+    {
+      "path": "dist/splitter-widget.js.map",
+      "size": 7618,
+      "mode": 420
+    },
+    {
+      "path": "dist/stats-widget.d.ts",
+      "size": 2477,
+      "mode": 420
+    },
+    {
+      "path": "dist/stats-widget.d.ts.map",
+      "size": 1779,
+      "mode": 420
+    },
+    {
+      "path": "dist/stats-widget.js",
+      "size": 7540,
+      "mode": 420
+    },
+    {
+      "path": "dist/stats-widget.js.map",
+      "size": 7196,
+      "mode": 420
+    },
+    {
+      "path": "dist/stylesheet.css",
+      "size": 34786,
+      "mode": 420
+    },
+    {
+      "path": "dist/theme-widget.d.ts",
+      "size": 2209,
+      "mode": 420
+    },
+    {
+      "path": "dist/theme-widget.d.ts.map",
+      "size": 1243,
+      "mode": 420
+    },
+    {
+      "path": "dist/theme-widget.js",
+      "size": 3665,
+      "mode": 420
+    },
+    {
+      "path": "dist/theme-widget.js.map",
+      "size": 3101,
+      "mode": 420
+    },
+    {
+      "path": "dist/themes.d.ts",
+      "size": 7054,
+      "mode": 420
+    },
+    {
+      "path": "dist/themes.d.ts.map",
+      "size": 1233,
+      "mode": 420
+    },
+    {
+      "path": "dist/themes.js",
+      "size": 5109,
+      "mode": 420
+    },
+    {
+      "path": "dist/themes.js.map",
+      "size": 2759,
+      "mode": 420
+    },
+    {
+      "path": "dist/timeline-widget.d.ts",
+      "size": 2856,
+      "mode": 420
+    },
+    {
+      "path": "dist/timeline-widget.d.ts.map",
+      "size": 1671,
+      "mode": 420
+    },
+    {
+      "path": "dist/timeline-widget.js",
+      "size": 7339,
+      "mode": 420
+    },
+    {
+      "path": "dist/timeline-widget.js.map",
+      "size": 6215,
+      "mode": 420
+    },
+    {
+      "path": "dist/toggle-widget.d.ts",
+      "size": 1431,
+      "mode": 420
+    },
+    {
+      "path": "dist/toggle-widget.d.ts.map",
+      "size": 1052,
+      "mode": 420
+    },
+    {
+      "path": "dist/toggle-widget.js",
+      "size": 1611,
+      "mode": 420
+    },
+    {
+      "path": "dist/toggle-widget.js.map",
+      "size": 1755,
+      "mode": 420
+    },
+    {
+      "path": "dist/zoom-widget.d.ts",
+      "size": 1934,
+      "mode": 420
+    },
+    {
+      "path": "dist/zoom-widget.d.ts.map",
+      "size": 1245,
+      "mode": 420
+    },
+    {
+      "path": "dist/zoom-widget.js",
+      "size": 4970,
+      "mode": 420
+    },
+    {
+      "path": "dist/zoom-widget.js.map",
+      "size": 4726,
+      "mode": 420
+    },
+    {
+      "path": "package.json",
+      "size": 1197,
+      "mode": 420
+    },
+    {
+      "path": "src/compass-widget.tsx",
+      "size": 4213,
+      "mode": 420
+    },
+    {
+      "path": "src/context-menu-widget.tsx",
+      "size": 3543,
+      "mode": 420
+    },
+    {
+      "path": "src/fullscreen-widget.tsx",
+      "size": 3991,
+      "mode": 420
+    },
+    {
+      "path": "src/geocoder-widget.tsx",
+      "size": 8020,
+      "mode": 420
+    },
+    {
+      "path": "src/gimbal-widget.tsx",
+      "size": 5842,
+      "mode": 420
+    },
+    {
+      "path": "src/icon-widget.tsx",
+      "size": 1791,
+      "mode": 420
+    },
+    {
+      "path": "src/index.ts",
+      "size": 3478,
+      "mode": 420
+    },
+    {
+      "path": "src/info-widget.tsx",
+      "size": 4753,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/button-group.tsx",
+      "size": 492,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/dropdown-menu.tsx",
+      "size": 3181,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/icon-button.tsx",
+      "size": 1160,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/popover.tsx",
+      "size": 4903,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/range-input.tsx",
+      "size": 12637,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/components/user-content.tsx",
+      "size": 784,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/data-url.ts",
+      "size": 216,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/geocode/geocoder-history.ts",
+      "size": 1995,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/geocode/geocoder.ts",
+      "size": 609,
+      "mode": 420
+    },
+    {
+      "path": "src/lib/geocode/geocoders.ts",
+      "size": 7088,
+      "mode": 420
+    },
+    {
+      "path": "src/loading-widget.tsx",
+      "size": 2360,
+      "mode": 420
+    },
+    {
+      "path": "src/popup-widget.tsx",
+      "size": 4804,
+      "mode": 420
+    },
+    {
+      "path": "src/reset-view-widget.tsx",
+      "size": 2949,
+      "mode": 420
+    },
+    {
+      "path": "src/scale-widget.tsx",
+      "size": 6447,
+      "mode": 420
+    },
+    {
+      "path": "src/screenshot-widget.tsx",
+      "size": 2763,
+      "mode": 420
+    },
+    {
+      "path": "src/scrollbar-widget.tsx",
+      "size": 9102,
+      "mode": 420
+    },
+    {
+      "path": "src/selector-widget.tsx",
+      "size": 3405,
+      "mode": 420
+    },
+    {
+      "path": "src/splitter-widget.tsx",
+      "size": 10475,
+      "mode": 420
+    },
+    {
+      "path": "src/stats-widget.tsx",
+      "size": 8621,
+      "mode": 420
+    },
+    {
+      "path": "src/stylesheet.css",
+      "size": 34786,
+      "mode": 420
+    },
+    {
+      "path": "src/theme-widget.tsx",
+      "size": 4817,
+      "mode": 420
+    },
+    {
+      "path": "src/themes.ts",
+      "size": 6151,
+      "mode": 420
+    },
+    {
+      "path": "src/timeline-widget.tsx",
+      "size": 8319,
+      "mode": 420
+    },
+    {
+      "path": "src/toggle-widget.tsx",
+      "size": 2652,
+      "mode": 420
+    },
+    {
+      "path": "src/zoom-widget.tsx",
+      "size": 6223,
+      "mode": 420
+    }
+  ],
+  "entryCount": 169,
+  "bundled": []
+}
