@@ -32,8 +32,10 @@ jobs:
         name: Expand authored payload
         run: cat .github/map-port-payload/part-* | base64 -d | tar -xz -C .
       - if: steps.payload.outputs.run == 'true'
-        name: Apply reviewed corrections
-        run: git show origin/ci/map-port-bootstrap-v5:scripts/map-port-fix.py | python
+        name: Apply reviewed corrections and register binding
+        run: |
+          git show origin/ci/map-port-bootstrap-v5:scripts/map-port-fix.py | python
+          git show origin/ci/map-port-bootstrap-v5:scripts/register-react-map-gl.py | python
       - if: steps.payload.outputs.run == 'true'
         name: Fetch pinned upstream evidence
         run: node packages/react-map-gl/scripts/sync-upstream.mjs
@@ -44,7 +46,7 @@ jobs:
           pnpm install --no-frozen-lockfile
       - if: steps.payload.outputs.run == 'true'
         name: Format authored files
-        run: pnpm format:files packages/react-map-gl .changeset/react-map-gl-binding.md
+        run: pnpm format:files packages/react-map-gl .changeset/react-map-gl-binding.md website/src/content/bindings.json
       - if: steps.payload.outputs.run == 'true'
         name: Validate binding
         run: |
@@ -60,7 +62,7 @@ jobs:
           pnpm cli:data
       - if: steps.payload.outputs.run == 'true'
         name: Check formatting
-        run: pnpm format:files:check packages/react-map-gl .changeset/react-map-gl-binding.md
+        run: pnpm format:files:check packages/react-map-gl .changeset/react-map-gl-binding.md website/src/content/bindings.json
       - if: steps.payload.outputs.run == 'true'
         name: Publish clean feature commit
         env:
