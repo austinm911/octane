@@ -1,0 +1,349 @@
+{
+  "id": "@mapbox/search-js-web@1.5.1",
+  "name": "@mapbox/search-js-web",
+  "version": "1.5.1",
+  "size": 1264807,
+  "unpackedSize": 3230685,
+  "shasum": "0e9302978d797b914cc30f97fdf58ec0f64d473e",
+  "integrity": "sha512-hhPbcbamv8Mzitzwgzzxac7GA1TUW5S4aKGDdDkOgbgTyoudunSm4Jem364yxv4bJi4dPFk+WSyhNdF1m5VCkw==",
+  "filename": "mapbox-search-js-web-1.5.1.tgz",
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "size": 2960,
+      "mode": 384
+    },
+    {
+      "path": "NOTICE.md",
+      "size": 2715,
+      "mode": 420
+    },
+    {
+      "path": "README.md",
+      "size": 337,
+      "mode": 420
+    },
+    {
+      "path": "cdn-server.js",
+      "size": 2568,
+      "mode": 420
+    },
+    {
+      "path": "dist/autofill.d.ts",
+      "size": 10726,
+      "mode": 493
+    },
+    {
+      "path": "dist/components/HTMLScopedElement.d.ts",
+      "size": 2368,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/HTMLShadowElement.d.ts",
+      "size": 804,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/MapboxAddressAutofill.d.ts",
+      "size": 9070,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/MapboxAddressConfirmation.d.ts",
+      "size": 4858,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/MapboxAddressConfirmationFeature.d.ts",
+      "size": 1712,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/MapboxAddressConfirmationNoFeature.d.ts",
+      "size": 1282,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/MapboxAddressMinimap.d.ts",
+      "size": 7248,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/MapboxGeocoder.d.ts",
+      "size": 12479,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/MapboxSearchBox.d.ts",
+      "size": 13067,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/MapboxSearchListbox.d.ts",
+      "size": 3379,
+      "mode": 420
+    },
+    {
+      "path": "dist/config.d.ts",
+      "size": 1278,
+      "mode": 493
+    },
+    {
+      "path": "dist/confirmAddress.d.ts",
+      "size": 1515,
+      "mode": 493
+    },
+    {
+      "path": "dist/constants.d.ts",
+      "size": 415,
+      "mode": 493
+    },
+    {
+      "path": "dist/events/MapboxEventManager.d.ts",
+      "size": 2363,
+      "mode": 420
+    },
+    {
+      "path": "dist/events/utils.d.ts",
+      "size": 1959,
+      "mode": 420
+    },
+    {
+      "path": "dist/index-development.js",
+      "size": 200530,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-development.js.map",
+      "size": 384890,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-esm.js",
+      "size": 198246,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-esm.js.map",
+      "size": 383242,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.d.ts",
+      "size": 1322,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.js",
+      "size": 105256,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.js.map",
+      "size": 371350,
+      "mode": 493
+    },
+    {
+      "path": "dist/MapboxHTMLEvent.d.ts",
+      "size": 847,
+      "mode": 493
+    },
+    {
+      "path": "dist/mapboxsearch.js",
+      "size": 146267,
+      "mode": 493
+    },
+    {
+      "path": "dist/mapboxsearch.js.map",
+      "size": 574532,
+      "mode": 493
+    },
+    {
+      "path": "dist/theme.d.ts",
+      "size": 10039,
+      "mode": 493
+    },
+    {
+      "path": "dist/utils/aria/index.d.ts",
+      "size": 1338,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/aria/messages.d.ts",
+      "size": 582,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/autofill.d.ts",
+      "size": 7062,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/class_name_transformers.d.ts",
+      "size": 792,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/confirmation.d.ts",
+      "size": 2172,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/contribute.d.ts",
+      "size": 1343,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/detect_browser_autofill.d.ts",
+      "size": 1227,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/dom.d.ts",
+      "size": 2208,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/geocoder.d.ts",
+      "size": 120,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/index.d.ts",
+      "size": 1138,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/listbox.d.ts",
+      "size": 1034,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/localization.d.ts",
+      "size": 580,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/map.d.ts",
+      "size": 1364,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/minimap.d.ts",
+      "size": 4097,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/popover.d.ts",
+      "size": 1514,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/services.d.ts",
+      "size": 101,
+      "mode": 420
+    },
+    {
+      "path": "hero.png",
+      "size": 701801,
+      "mode": 420
+    },
+    {
+      "path": "package.json",
+      "size": 2085,
+      "mode": 420
+    },
+    {
+      "path": "tsconfig.json",
+      "size": 718,
+      "mode": 420
+    },
+    {
+      "path": "tsconfig.types.json",
+      "size": 180,
+      "mode": 420
+    },
+    {
+      "path": "typehead.config.js",
+      "size": 943,
+      "mode": 420
+    },
+    {
+      "path": "web/assets/marker-custom.svg",
+      "size": 320,
+      "mode": 420
+    },
+    {
+      "path": "web/cdn-custom-elements.html",
+      "size": 6219,
+      "mode": 420
+    },
+    {
+      "path": "web/cdn.html",
+      "size": 6199,
+      "mode": 420
+    },
+    {
+      "path": "web/confirmation.html",
+      "size": 441,
+      "mode": 420
+    },
+    {
+      "path": "web/index.html",
+      "size": 5921,
+      "mode": 420
+    },
+    {
+      "path": "web/index.ts",
+      "size": 1111,
+      "mode": 420
+    },
+    {
+      "path": "web/lib/configureAddressAutofill.ts",
+      "size": 2468,
+      "mode": 420
+    },
+    {
+      "path": "web/lib/configureGeocoder.ts",
+      "size": 3647,
+      "mode": 420
+    },
+    {
+      "path": "web/lib/configureMinimap.ts",
+      "size": 1324,
+      "mode": 420
+    },
+    {
+      "path": "web/lib/configureSearchBox.ts",
+      "size": 3629,
+      "mode": 420
+    },
+    {
+      "path": "web/lib/constants.ts",
+      "size": 3128,
+      "mode": 420
+    },
+    {
+      "path": "web/map-geocoder.html",
+      "size": 1297,
+      "mode": 420
+    },
+    {
+      "path": "web/map-searchbox.html",
+      "size": 1391,
+      "mode": 420
+    },
+    {
+      "path": "web/minimap.html",
+      "size": 685,
+      "mode": 420
+    },
+    {
+      "path": "web/test.html",
+      "size": 882,
+      "mode": 420
+    }
+  ],
+  "entryCount": 67,
+  "bundled": []
+}

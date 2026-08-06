@@ -1,0 +1,224 @@
+{
+  "id": "@mapbox/search-js-core@1.5.1",
+  "name": "@mapbox/search-js-core",
+  "version": "1.5.1",
+  "size": 938976,
+  "unpackedSize": 1489757,
+  "shasum": "fa6f952d96e7aab81c0bc54a9734f6da692f93a9",
+  "integrity": "sha512-aXv9LoN8FvTkMhOOWxIEwFsh8aZFMid1xZfGD71nxWGEWG+TufjCdMCExOI/q7XI49xR1+kEc3ONI21X484uow==",
+  "filename": "mapbox-search-js-core-1.5.1.tgz",
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "size": 1340,
+      "mode": 384
+    },
+    {
+      "path": "NOTICE.md",
+      "size": 1144,
+      "mode": 420
+    },
+    {
+      "path": "README.md",
+      "size": 339,
+      "mode": 420
+    },
+    {
+      "path": "dist/autofill/AddressAutofillCore.d.ts",
+      "size": 7777,
+      "mode": 420
+    },
+    {
+      "path": "dist/autofill/constants.d.ts",
+      "size": 261,
+      "mode": 420
+    },
+    {
+      "path": "dist/autofill/types.d.ts",
+      "size": 6856,
+      "mode": 420
+    },
+    {
+      "path": "dist/constants.d.ts",
+      "size": 439,
+      "mode": 493
+    },
+    {
+      "path": "dist/featureToSuggestion.d.ts",
+      "size": 431,
+      "mode": 493
+    },
+    {
+      "path": "dist/fetch.d.ts",
+      "size": 1064,
+      "mode": 493
+    },
+    {
+      "path": "dist/geocode/constants.d.ts",
+      "size": 124,
+      "mode": 420
+    },
+    {
+      "path": "dist/geocode/GeocodingCore.d.ts",
+      "size": 11327,
+      "mode": 420
+    },
+    {
+      "path": "dist/geocode/types.d.ts",
+      "size": 7541,
+      "mode": 420
+    },
+    {
+      "path": "dist/index-development.js",
+      "size": 35485,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-development.js.map",
+      "size": 121109,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-esm.js",
+      "size": 34016,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-esm.js.map",
+      "size": 117219,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.d.ts",
+      "size": 3278,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.js",
+      "size": 16929,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.js.map",
+      "size": 117941,
+      "mode": 493
+    },
+    {
+      "path": "dist/LngLat.d.ts",
+      "size": 3204,
+      "mode": 493
+    },
+    {
+      "path": "dist/LngLatBounds.d.ts",
+      "size": 6706,
+      "mode": 493
+    },
+    {
+      "path": "dist/MapboxError.d.ts",
+      "size": 908,
+      "mode": 493
+    },
+    {
+      "path": "dist/mapboxsearchcore.js",
+      "size": 16964,
+      "mode": 493
+    },
+    {
+      "path": "dist/mapboxsearchcore.js.map",
+      "size": 117941,
+      "mode": 493
+    },
+    {
+      "path": "dist/searchbox/constants.d.ts",
+      "size": 458,
+      "mode": 420
+    },
+    {
+      "path": "dist/searchbox/SearchBoxCore.d.ts",
+      "size": 15655,
+      "mode": 420
+    },
+    {
+      "path": "dist/searchbox/types.d.ts",
+      "size": 11079,
+      "mode": 420
+    },
+    {
+      "path": "dist/SearchSession.d.ts",
+      "size": 8142,
+      "mode": 493
+    },
+    {
+      "path": "dist/SessionToken.d.ts",
+      "size": 2023,
+      "mode": 493
+    },
+    {
+      "path": "dist/types.d.ts",
+      "size": 3111,
+      "mode": 493
+    },
+    {
+      "path": "dist/utils/debounce.d.ts",
+      "size": 267,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/Evented.d.ts",
+      "size": 996,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/queryParams.d.ts",
+      "size": 835,
+      "mode": 420
+    },
+    {
+      "path": "dist/utils/uuid.d.ts",
+      "size": 436,
+      "mode": 420
+    },
+    {
+      "path": "dist/validate/constants.d.ts",
+      "size": 168,
+      "mode": 420
+    },
+    {
+      "path": "dist/validate/types.d.ts",
+      "size": 5261,
+      "mode": 420
+    },
+    {
+      "path": "dist/validate/ValidationCore.d.ts",
+      "size": 4893,
+      "mode": 420
+    },
+    {
+      "path": "hero.png",
+      "size": 803653,
+      "mode": 420
+    },
+    {
+      "path": "package.json",
+      "size": 1377,
+      "mode": 420
+    },
+    {
+      "path": "tsconfig.json",
+      "size": 718,
+      "mode": 420
+    },
+    {
+      "path": "tsconfig.types.json",
+      "size": 180,
+      "mode": 420
+    },
+    {
+      "path": "typehead.config.js",
+      "size": 162,
+      "mode": 420
+    }
+  ],
+  "entryCount": 42,
+  "bundled": []
+}

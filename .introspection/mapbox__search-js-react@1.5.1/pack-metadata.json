@@ -1,0 +1,134 @@
+{
+  "id": "@mapbox/search-js-react@1.5.1",
+  "name": "@mapbox/search-js-react",
+  "version": "1.5.1",
+  "size": 228269,
+  "unpackedSize": 440749,
+  "shasum": "bfeeb9a38efbd9b58ebd4f0e22c935064d7a047d",
+  "integrity": "sha512-+5t7WkAOhpVvqWF9A+BZYEjkFaZ6i5lvLwkXqV5a/UrpsHCCDpcg2Ii5TKvtCJ1GW7VVnCocDH2aF49tIvtM2g==",
+  "filename": "mapbox-search-js-react-1.5.1.tgz",
+  "files": [
+    {
+      "path": "LICENSE.txt",
+      "size": 115,
+      "mode": 384
+    },
+    {
+      "path": "README.md",
+      "size": 341,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/AddressAutofill.d.ts",
+      "size": 6084,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/AddressMinimap.d.ts",
+      "size": 4574,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/Geocoder.d.ts",
+      "size": 5572,
+      "mode": 420
+    },
+    {
+      "path": "dist/components/SearchBox.d.ts",
+      "size": 5678,
+      "mode": 420
+    },
+    {
+      "path": "dist/hooks/useAddressAutofillCore.d.ts",
+      "size": 851,
+      "mode": 420
+    },
+    {
+      "path": "dist/hooks/useConfirmAddress.d.ts",
+      "size": 1258,
+      "mode": 420
+    },
+    {
+      "path": "dist/hooks/useEvented.d.ts",
+      "size": 359,
+      "mode": 420
+    },
+    {
+      "path": "dist/hooks/useGeocodingCore.d.ts",
+      "size": 802,
+      "mode": 420
+    },
+    {
+      "path": "dist/hooks/useSearchBoxCore.d.ts",
+      "size": 794,
+      "mode": 420
+    },
+    {
+      "path": "dist/hooks/useSearchSession.d.ts",
+      "size": 1147,
+      "mode": 420
+    },
+    {
+      "path": "dist/index-development.js",
+      "size": 21422,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-development.js.map",
+      "size": 57809,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-esm.js",
+      "size": 18341,
+      "mode": 493
+    },
+    {
+      "path": "dist/index-esm.js.map",
+      "size": 57547,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.d.ts",
+      "size": 795,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.js",
+      "size": 10999,
+      "mode": 493
+    },
+    {
+      "path": "dist/index.js.map",
+      "size": 56150,
+      "mode": 493
+    },
+    {
+      "path": "hero.png",
+      "size": 186868,
+      "mode": 420
+    },
+    {
+      "path": "package.json",
+      "size": 2085,
+      "mode": 420
+    },
+    {
+      "path": "tsconfig.json",
+      "size": 736,
+      "mode": 420
+    },
+    {
+      "path": "tsconfig.types.json",
+      "size": 180,
+      "mode": 420
+    },
+    {
+      "path": "typehead.config.js",
+      "size": 242,
+      "mode": 420
+    }
+  ],
+  "entryCount": 24,
+  "bundled": []
+}
