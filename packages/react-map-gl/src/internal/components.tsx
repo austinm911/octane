@@ -43,7 +43,7 @@ export const Marker = memo(function Marker(props: InternalMarkerProps) {
 		const { ref: _ref, ...options } = props;
 		const instance = new mapLib.Marker({
 			...options,
-			element: hasChildren ? document.createElement('div') : null,
+			element: hasChildren ? document.createElement('div') : undefined,
 		});
 		instance.setLngLat([props.longitude, props.latitude]);
 
@@ -153,10 +153,10 @@ export const Popup = memo(function Popup(props: InternalPopupProps) {
 			popup.setLngLat([props.longitude, props.latitude]);
 		}
 		if (props.offset && !deepEqual(oldProps.offset, props.offset)) {
-			popup.options.anchor = props.anchor;
 			popup.setOffset(props.offset);
 		}
 		if (oldProps.anchor !== props.anchor || oldProps.maxWidth !== props.maxWidth) {
+			popup.options.anchor = props.anchor;
 			popup.setMaxWidth(props.maxWidth);
 		}
 		const classNameDiff = compareClassNames(oldProps.className, props.className);
