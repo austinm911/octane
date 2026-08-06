@@ -2326,6 +2326,64 @@ export default defineConfig({
 			},
 			{
 				test: {
+					name: 'react-map-gl',
+					include: [
+						'packages/react-map-gl/tests/**/*.test.ts',
+						'packages/react-map-gl/tests/**/*.test.tsx',
+					],
+					exclude: [
+						'packages/react-map-gl/tests/browser/**/*.test.ts',
+						'packages/react-map-gl/tests/ssr/**/*.test.ts',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-map-gl\/mapbox$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-map-gl/src/mapbox.tsx'),
+						},
+						{
+							find: /^@octanejs\/react-map-gl\/maplibre$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-map-gl/src/maplibre.tsx'),
+						},
+					],
+				},
+			},
+			{
+				test: {
+					name: 'react-map-gl-browser',
+					include: ['packages/react-map-gl/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+			},
+			{
+				test: {
+					name: 'react-map-gl-ssr',
+					include: ['packages/react-map-gl/tests/ssr/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+				},
+				plugins: [octane({ ssr: true })],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/react-map-gl\/mapbox$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-map-gl/src/mapbox.tsx'),
+						},
+						{
+							find: /^@octanejs\/react-map-gl\/maplibre$/,
+							replacement: resolve(import.meta.dirname, 'packages/react-map-gl/src/maplibre.tsx'),
+						},
+					],
+				},
+			},
+
+			{
+				test: {
 					name: 'floating-ui',
 					include: [
 						'packages/floating-ui/tests/**/*.test.ts',

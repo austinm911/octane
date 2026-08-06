@@ -83,6 +83,11 @@
     "packages": ["@octanejs/three"]
   },
   {
+    "title": "Maps and geospatial",
+    "description": "Interactive Mapbox and MapLibre maps, controls, sources, layers, markers, and popups.",
+    "packages": ["@octanejs/react-map-gl"]
+  },
+  {
     "title": "Desktop",
     "description": "Tauri v2 and Electron desktop bindings for Octane applications.",
     "packages": ["@octanejs/tauri", "@octanejs/electron"]

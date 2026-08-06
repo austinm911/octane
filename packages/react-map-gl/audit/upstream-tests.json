@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "upstream": "react-map-gl@8.1.1",
+  "artifacts": [
+    {
+      "path": "modules/main/test/components/controls.spec.jsx",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/components/layer.spec.jsx",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/components/map.spec.jsx",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/components/marker.spec.jsx",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/components/popup.spec.jsx",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/components/source.spec.jsx",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/components/use-map.spec.jsx",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/utils/apply-react-style.spec.js",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/utils/deep-equal.spec.js",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/utils/style-utils.spec.js",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/main/test/utils/transform.spec.js",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "modules/react-mapbox/test/components/controls.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-mapbox/test/components/layer.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-mapbox/test/components/map.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-mapbox/test/components/marker.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-mapbox/test/components/popup.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-mapbox/test/components/source.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-mapbox/test/components/use-map.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-mapbox/test/utils/apply-react-style.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-mapbox/test/utils/compare-class-names.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-mapbox/test/utils/deep-equal.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-mapbox/test/utils/style-utils.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-mapbox/test/utils/transform.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-maplibre/test/components/controls.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-maplibre/test/components/layer.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-maplibre/test/components/map.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-maplibre/test/components/marker.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-maplibre/test/components/popup.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-maplibre/test/components/source.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-maplibre/test/components/use-map.spec.jsx",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    },
+    {
+      "path": "modules/react-maplibre/test/utils/apply-react-style.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-maplibre/test/utils/compare-class-names.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-maplibre/test/utils/deep-equal.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-maplibre/test/utils/style-utils.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "modules/react-maplibre/test/utils/transform.spec.js",
+      "disposition": "pending-neutral",
+      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+    },
+    {
+      "path": "test/browser.js",
+      "disposition": "pending-harness",
+      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+    },
+    {
+      "path": "test/node.js",
+      "disposition": "pending-harness",
+      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+    },
+    {
+      "path": "test/render/index.jsx",
+      "disposition": "pending-harness",
+      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+    },
+    {
+      "path": "test/render/test-cases.jsx",
+      "disposition": "pending-harness",
+      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+    },
+    {
+      "path": "test/size/mapbox-legacy.js",
+      "disposition": "not-applicable",
+      "reason": "The initial Octane binding omits the Mapbox GL JS 1.13 legacy entry point."
+    },
+    {
+      "path": "test/size/mapbox.js",
+      "disposition": "pending-harness",
+      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+    },
+    {
+      "path": "test/size/maplibre.js",
+      "disposition": "pending-harness",
+      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+    },
+    {
+      "path": "test/src/exports.ts",
+      "disposition": "pending-adaptation",
+      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+    }
+  ]
+}
