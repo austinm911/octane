@@ -56,5 +56,10 @@ export function validateTestDisposition(discovered, artifacts) {
 		if (typeof entry.reason !== 'string' || entry.reason.trim() === '') {
 			throw new Error(`Missing disposition reason for ${entry.path}`);
 		}
+		if (['ported', 'run-unchanged'].includes(entry.disposition)) {
+			if (typeof entry.evidence !== 'string' || entry.evidence.trim() === '') {
+				throw new Error(`Missing disposition evidence for ${entry.path}`);
+			}
+		}
 	}
 }

@@ -59,143 +59,167 @@
     },
     {
       "path": "modules/react-mapbox/test/components/controls.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/mapbox with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/mapbox"
     },
     {
       "path": "modules/react-mapbox/test/components/layer.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/mapbox with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/mapbox"
     },
     {
       "path": "modules/react-mapbox/test/components/map.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/mapbox with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/mapbox"
     },
     {
       "path": "modules/react-mapbox/test/components/marker.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/mapbox with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/mapbox"
     },
     {
       "path": "modules/react-mapbox/test/components/popup.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/mapbox with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/mapbox"
     },
     {
       "path": "modules/react-mapbox/test/components/source.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/mapbox with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/mapbox"
     },
     {
       "path": "modules/react-mapbox/test/components/use-map.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/mapbox with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/mapbox"
     },
     {
       "path": "modules/react-mapbox/test/utils/apply-react-style.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-mapbox/test/utils/compare-class-names.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-mapbox/test/utils/deep-equal.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-mapbox/test/utils/style-utils.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-mapbox/test/utils/transform.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-maplibre/test/components/controls.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/maplibre with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/maplibre"
     },
     {
       "path": "modules/react-maplibre/test/components/layer.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/maplibre with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/maplibre"
     },
     {
       "path": "modules/react-maplibre/test/components/map.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/maplibre with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/maplibre"
     },
     {
       "path": "modules/react-maplibre/test/components/marker.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/maplibre with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/maplibre"
     },
     {
       "path": "modules/react-maplibre/test/components/popup.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/maplibre with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/maplibre"
     },
     {
       "path": "modules/react-maplibre/test/components/source.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/maplibre with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/maplibre"
     },
     {
       "path": "modules/react-maplibre/test/components/use-map.spec.jsx",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Ported case-by-case under tests/upstream/components/maplibre with the pinned upstream top-level case names and assertions.",
+      "evidence": "packages/react-map-gl/tests/upstream/components/maplibre"
     },
     {
       "path": "modules/react-maplibre/test/utils/apply-react-style.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-maplibre/test/utils/compare-class-names.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-maplibre/test/utils/deep-equal.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-maplibre/test/utils/style-utils.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "modules/react-maplibre/test/utils/transform.spec.js",
-      "disposition": "pending-neutral",
-      "reason": "Framework-neutral upstream suite is vendored but not yet wired to the copied controller/utility boundary."
+      "disposition": "ported",
+      "reason": "Ported to the framework-neutral Vitest suite under tests/upstream/utils.",
+      "evidence": "packages/react-map-gl/tests/upstream/utils"
     },
     {
       "path": "test/browser.js",
-      "disposition": "pending-harness",
-      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+      "disposition": "not-applicable",
+      "reason": "Upstream Ocular browser runner is orchestration rather than a behavioral case; its modern component and utility registrations execute through the pristine and adapted full-suite projects, while its legacy registrations are out of scope."
     },
     {
       "path": "test/node.js",
-      "disposition": "pending-harness",
-      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+      "disposition": "not-applicable",
+      "reason": "Upstream Ocular node runner is orchestration; its export and modern utility registrations execute directly in the pristine/adapted lanes."
     },
     {
       "path": "test/render/index.jsx",
-      "disposition": "pending-harness",
-      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+      "disposition": "not-applicable",
+      "reason": "The pinned visual renderer imports only react-map-gl/mapbox-legacy, which the initial Octane binding explicitly omits. Modern Mapbox and MapLibre production WebGL behavior has separate browser evidence."
     },
     {
       "path": "test/render/test-cases.jsx",
-      "disposition": "pending-harness",
-      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+      "disposition": "not-applicable",
+      "reason": "The pinned visual renderer imports only react-map-gl/mapbox-legacy, which the initial Octane binding explicitly omits. Modern Mapbox and MapLibre production WebGL behavior has separate browser evidence."
     },
     {
       "path": "test/size/mapbox-legacy.js",
@@ -204,18 +228,21 @@
     },
     {
       "path": "test/size/mapbox.js",
-      "disposition": "pending-harness",
-      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+      "disposition": "ported",
+      "reason": "The packed-consumer distribution suite resolves and production-builds both authored subpath exports outside the workspace.",
+      "evidence": "packages/react-map-gl/tests/distribution/packed-consumer.test.ts"
     },
     {
       "path": "test/size/maplibre.js",
-      "disposition": "pending-harness",
-      "reason": "Upstream runner, render, or size evidence requires a package-owned executable lane."
+      "disposition": "ported",
+      "reason": "The packed-consumer distribution suite resolves and production-builds both authored subpath exports outside the workspace.",
+      "evidence": "packages/react-map-gl/tests/distribution/packed-consumer.test.ts"
     },
     {
       "path": "test/src/exports.ts",
-      "disposition": "pending-adaptation",
-      "reason": "React-facing upstream case requires an Octane fixture and provenance-preserving adapted lane."
+      "disposition": "ported",
+      "reason": "Adapted by the bidirectional public runtime export conformance suite.",
+      "evidence": "packages/react-map-gl/tests/conformance/exports.test.ts"
     }
   ]
 }

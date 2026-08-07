@@ -55,15 +55,35 @@ Not included in the initial binding. The pinned upstream legacy entry targets Ma
 
 The complete upstream `modules/react-mapbox/test`,
 `modules/react-maplibre/test`, legacy `modules/main/test`, and root test trees
-are vendored as the future parity oracle. `audit/upstream-tests.json` records a
-checked disposition and reason for all 43 upstream test artifacts; the integrity
-command fails if a pinned artifact is added, removed, duplicated, or left
-unclassified. Applicable cases are not yet ported or executed. The current conformance and SSR suites are Octane-owned package-contract tests and are not React-parity evidence. The production MapLibre browser fixture compiles authored package source with Vite and proves real WebGL construction, controls, Marker, Source/Layer attachment, teardown, and remount under Chromium; it is integration evidence, not a substitute for the unported upstream browser/render matrix.
+are vendored. `audit/upstream-tests.json` records a checked disposition, reason,
+and evidence path for all 43 test artifacts; the integrity command fails if an
+artifact is added, removed, duplicated, left unclassified, or marked ported
+without evidence.
 
-Before parity can be claimed, every vendored test artifact needs a recorded
-disposition, applicable controller suites must run unchanged, React component
-cases must be adapted under `tests/upstream/`, and pristine/adapted runtime and
-type lanes plus browser/WebGL lanes must be registered in
-`audit/react-parity.json`. The first PR remains a draft until those inventories,
-negative controls, engine matrix, and type-test ledger execute through the
-generic parity harness. No unexecuted case is counted as parity.
+All applicable modern Mapbox and MapLibre utility and component cases execute
+through the generic parity harness:
+
+- the pristine React oracle runs 69 collected identities against
+  `react-map-gl@8.1.1`, including all 24 modern upstream component case names in
+  real Chromium/WebGL;
+- the adapted Octane lane runs 68 collected identities, including the same 24
+  modern component cases and the ported framework-neutral utility assertions;
+- parallel repo-authored type lanes compile the same three assertion groups and
+  two rejection assertions against the pinned React package and Octane, with an
+  exact permitted-import transformation check;
+- inventory and type-ledger negative controls reject missing, stale, duplicated,
+  unclassified, or structurally drifted evidence.
+
+The root Ocular files are orchestration rather than additional behavior. The
+pinned visual-render fixtures exclusively import `mapbox-legacy`, so they are
+not applicable to the initial modern-only binding. Modern production evidence
+instead builds authored source with Vite and exercises real Mapbox and MapLibre
+WebGL, controls, overlays, Source/Layer updates, events, resize, teardown, and
+MapLibre reuse. With `MAPBOX_ACCESS_TOKEN`, the Mapbox lane loads the hosted
+streets style; without it, the same always-executed test uses an offline style
+and verifies that no hosted request is attempted.
+
+Octane-only conformance, SSR, distribution, and production browser tests remain
+outside the upstream-suite identity counts. `audit/react-parity.json` registers
+the pristine/adapted runtime and type lanes with the repository's generic parity
+runner; no unexecuted case is counted as parity evidence.

@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "permittedTransformations": [
+    "react-map-gl/mapbox -> ../src/mapbox",
+    "react-map-gl/maplibre -> ../src/maplibre"
+  ],
+  "pristine": {
+    "path": "packages/react-map-gl/upstream-typetests/public-api.test.tsx",
+    "sha256": "b84020f9bab5ccae29f12005809b90173a03dbe11472fc4adcba65604fe324a9"
+  },
+  "adapted": {
+    "path": "packages/react-map-gl/typetests/public-api.test.tsx",
+    "sha256": "ce6d05a04fe0f72cd55d6846a4d4bf8c5cdbef237315cd853ad261e29b21e66c"
+  },
+  "assertionGroups": [
+    "mapbox-public-surface",
+    "maplibre-public-surface",
+    "rejected-props"
+  ],
+  "rejectionAssertions": 2
+}

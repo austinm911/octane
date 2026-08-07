@@ -11,6 +11,7 @@ import MaplibreMap, { LogoControl, TerrainControl } from '../src/maplibre';
 const mapboxRef: { current: MapboxRef | null } = { current: null };
 const maplibreRef: { current: MaplibreRef | null } = { current: null };
 
+// TYPE-PARITY: mapbox-public-surface
 export function MapboxFixture() {
 	return (
 		<MapboxMap
@@ -31,6 +32,7 @@ export function MapboxFixture() {
 	);
 }
 
+// TYPE-PARITY: maplibre-public-surface
 export function MaplibreFixture() {
 	return (
 		<MaplibreMap ref={maplibreRef} initialViewState={{ longitude: 0, latitude: 0, zoom: 2 }}>
@@ -39,3 +41,11 @@ export function MaplibreFixture() {
 		</MaplibreMap>
 	);
 }
+
+// TYPE-PARITY: rejected-props
+// @ts-expect-error Marker longitude must be numeric.
+const invalidMarker = <MapboxMarker longitude="west" latitude={34.05} />;
+// @ts-expect-error Control position must be a supported map control position.
+const invalidControl = <NavigationControl position="middle" />;
+void invalidMarker;
+void invalidControl;

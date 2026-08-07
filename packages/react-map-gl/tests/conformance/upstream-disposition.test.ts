@@ -4,7 +4,12 @@ import { validateTestDisposition } from '../../scripts/test-disposition-lib.mjs'
 const discovered = ['a.spec.js', 'b.test.ts'];
 const complete = [
 	{ path: 'a.spec.js', disposition: 'pending-adaptation', reason: 'Needs an Octane fixture.' },
-	{ path: 'b.test.ts', disposition: 'run-unchanged', reason: 'Framework-neutral suite.' },
+	{
+		path: 'b.test.ts',
+		disposition: 'run-unchanged',
+		reason: 'Framework-neutral suite.',
+		evidence: 'tests/b.test.ts',
+	},
 ];
 
 describe('upstream test disposition negative controls', () => {

@@ -20,6 +20,10 @@ await build({
 	configFile: false,
 	logLevel: 'silent',
 	plugins: [octane({ hmr: false })],
+	define: { __MAPBOX_TOKEN__: JSON.stringify(process.env.MAPBOX_ACCESS_TOKEN ?? '') },
 	build: { outDir, emptyOutDir: true, minify: false },
 });
-console.log('__OCTANE_MAPLIBRE_BUILD__' + JSON.stringify({ appRoot, outDir }));
+console.log(
+	'__OCTANE_MAPLIBRE_BUILD__' +
+		JSON.stringify({ appRoot, outDir, hasMapboxToken: Boolean(process.env.MAPBOX_ACCESS_TOKEN) }),
+);

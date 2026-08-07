@@ -40,9 +40,11 @@
   "scripts": {
     "test": "pnpm upstream:check && vitest run --root ../.. --project react-map-gl --project react-map-gl-ssr --project react-map-gl-browser",
     "upstream:sync": "node scripts/sync-upstream.mjs",
-    "upstream:check": "node scripts/check-upstream.mjs && node scripts/check-test-disposition.mjs",
-    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json",
-    "test:browser": "vitest run --root ../.. --project react-map-gl-browser"
+    "upstream:check": "node scripts/check-upstream.mjs && node scripts/check-test-disposition.mjs && node scripts/check-type-parity.mjs && pnpm parity:check",
+    "typecheck": "node scripts/check-type-parity.mjs && tsrx-tsc --noEmit -p tsconfig.json && tsc --noEmit -p upstream-typetests/tsconfig.json && tsrx-tsc --noEmit -p typetests/tsconfig.json",
+    "test:browser": "vitest run --root ../.. --project react-map-gl-browser",
+    "parity:generate": "node scripts/check-type-parity.mjs --write && node scripts/runtime-inventory.mjs && node scripts/update-parity-manifest.mjs",
+    "parity:check": "node scripts/check-type-parity.mjs && node scripts/runtime-inventory.mjs --check && node scripts/update-parity-manifest.mjs --check"
   },
   "peerDependencies": {
     "mapbox-gl": ">=3.5.0",
@@ -60,10 +62,15 @@
   "devDependencies": {
     "@octanejs/testing-library": "workspace:*",
     "@octanejs/vite-plugin": "workspace:*",
+    "@types/react": "19.2.17",
+    "@types/react-dom": "19.2.3",
     "mapbox-gl": "3.9.0",
     "maplibre-gl": "5.0.0",
     "octane": "workspace:*",
     "playwright": "catalog:default",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-map-gl": "8.1.1",
     "vite": "catalog:default",
     "vitest": "catalog:default"
   }

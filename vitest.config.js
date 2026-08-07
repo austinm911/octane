@@ -2325,6 +2325,31 @@ export default defineConfig({
 				},
 			},
 			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-map-gl-pristine',
+					include: [
+						'packages/react-map-gl/tests/pristine/**/*.test.ts',
+						'packages/react-map-gl/tests/pristine/**/*.test.tsx',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+			},
+			{
+				testExecution: { group: 'react-parity' },
+				test: {
+					name: 'react-map-gl-upstream',
+					include: [
+						'packages/react-map-gl/tests/upstream/**/*.test.ts',
+						'packages/react-map-gl/tests/upstream/**/*.test.tsx',
+					],
+					environment: 'jsdom',
+					globals: false,
+				},
+				plugins: [octane()],
+			},
+			{
 				test: {
 					name: 'react-map-gl',
 					include: [
@@ -2333,7 +2358,9 @@ export default defineConfig({
 					],
 					exclude: [
 						'packages/react-map-gl/tests/browser/**/*.test.ts',
+						'packages/react-map-gl/tests/pristine/**/*.test.ts',
 						'packages/react-map-gl/tests/ssr/**/*.test.ts',
+						'packages/react-map-gl/tests/upstream/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					globals: false,

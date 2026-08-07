@@ -31,3 +31,7 @@ Use `@octanejs/react-map-gl/maplibre` with `maplibre-gl` for MapLibre. Mapbox GL
 The public component names and engine-specific types mirror the pinned upstream
 entry points. Refs are ordinary Octane props rather than `forwardRef` wrappers.
 See `UPSTREAM.md` for the source pin, test disposition, and explicit parity gaps.
+
+## Compatibility evidence
+
+The pinned modern Mapbox and MapLibre component and utility cases execute in pristine React and adapted Octane full-suite lanes, with parallel public type oracles. Production Chromium tests exercise both engines with real WebGL; Mapbox uses an offline style by default and automatically exercises a hosted style when `MAPBOX_ACCESS_TOKEN` is present. See `UPSTREAM.md` for the exact inventories, classifications, and intentional gaps.

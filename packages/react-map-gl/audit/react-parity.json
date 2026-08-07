@@ -1,0 +1,213 @@
+{
+  "$schema": "./react-parity.schema.json",
+  "schemaVersion": 1,
+  "provenance": {
+    "repo": "https://github.com/visgl/react-map-gl.git",
+    "version": "8.1.1",
+    "commit": "f295bd524e01b7fc0fb9c9e9d1d5bd47b055b67d",
+    "sourceRoot": "modules",
+    "testRoot": "modules/react-mapbox/test, modules/react-maplibre/test, test",
+    "license": "MIT",
+    "integrity": "sha256:7d23cdd87f79506f5ef8ec6af167fab077c7bd5b080fba3ec2a54ee77a6324b5",
+    "verification": "verified"
+  },
+  "upstreamSuites": {
+    "runtime": "present",
+    "types": "absent"
+  },
+  "adaptedRoots": {
+    "source": {
+      "roots": [
+        "packages/react-map-gl/src"
+      ],
+      "include": [
+        "\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
+      "exclude": []
+    },
+    "tests": {
+      "roots": [
+        "packages/react-map-gl/tests/upstream"
+      ],
+      "include": [
+        "\\.(?:test|spec)\\.(?:[cm]?[jt]s|[jt]sx|tsrx)$"
+      ],
+      "exclude": []
+    }
+  },
+  "adaptedRuntimeSummary": {
+    "inventoryEntries": 68,
+    "uniqueIdentities": 67,
+    "duplicateEntriesWithinLanes": 1,
+    "identitiesSharedAcrossLanes": 0
+  },
+  "environments": {
+    "workspace-node": {
+      "node": ">=22",
+      "platform": "any",
+      "arch": "any",
+      "packageManager": "pnpm@11.15.1",
+      "lockfile": "pnpm-lock.yaml",
+      "lockfileSha256": "2d8f87c2207c34e59d8c51f8fd2b7b666ba295287ed5fa225cd29256073a9ea3"
+    }
+  },
+  "lanes": [
+    {
+      "id": "react-map-gl-pristine-runtime",
+      "type": "pristine-upstream",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-map-gl-pristine",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs the pinned React utility and component cases against the pristine upstream implementation and verifies exact collected/executed identities.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-map-gl/audit/pristine-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-map-gl/audit/pristine-runtime.json",
+          "role": "support",
+          "sha256": "0c3aba27bcef8624892045cfebbc0f74843812d635acb1ca5878842f135c7a83"
+        },
+        {
+          "path": "packages/react-map-gl/scripts/runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "5478b942362ec5d38556b8b4edc34285f00ed99295cb471416446576c96bd4df"
+        }
+      ]
+    },
+    {
+      "id": "react-map-gl-adapted-runtime",
+      "type": "adapted-octane",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-map-gl-upstream",
+      "evidenceOrigin": "upstream-suite",
+      "notes": "Runs every applicable modern Mapbox and MapLibre upstream case adapted to Octane plus the neutral utility boundary.",
+      "execution": {
+        "kind": "vitest-full",
+        "inventory": "packages/react-map-gl/audit/adapted-runtime.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-map-gl/audit/adapted-runtime.json",
+          "role": "support",
+          "sha256": "c108ceb8e8f265b315372980f10cd23a6786c7bd4e2bcdcbd19567ddfd20511f"
+        },
+        {
+          "path": "packages/react-map-gl/scripts/runtime-inventory.mjs",
+          "role": "support",
+          "sha256": "5478b942362ec5d38556b8b4edc34285f00ed99295cb471416446576c96bd4df"
+        }
+      ]
+    },
+    {
+      "id": "react-map-gl-pristine-types",
+      "type": "pristine-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-map-gl-pristine-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the parallel public API oracle against react-map-gl 8.1.1 and React types.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsc",
+        "project": "packages/react-map-gl/upstream-typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-map-gl/upstream-typetests/public-api.test.tsx",
+          "role": "test",
+          "sha256": "b84020f9bab5ccae29f12005809b90173a03dbe11472fc4adcba65604fe324a9",
+          "cases": [
+            {
+              "id": "type:b1a9017f74ca2328",
+              "testName": "mapbox-public-surface",
+              "fullName": "mapbox-public-surface"
+            },
+            {
+              "id": "type:aa0df16572eb5800",
+              "testName": "maplibre-public-surface",
+              "fullName": "maplibre-public-surface"
+            },
+            {
+              "id": "type:011d2e78bf5d4da6",
+              "testName": "rejected-props",
+              "fullName": "rejected-props"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-map-gl/upstream-typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "479c08788a350f4a87f49f0bf4a8250d70b25ccb9c1c2256a4839e5d8bf0eda7"
+        },
+        {
+          "path": "packages/react-map-gl/audit/type-parity.json",
+          "role": "support",
+          "sha256": "2d85d7682eb2577e63305a6273b5ae38902d41cc3cf9302710a37871cebc03af"
+        },
+        {
+          "path": "packages/react-map-gl/scripts/check-type-parity.mjs",
+          "role": "support",
+          "sha256": "4f14efccbb7e966ab14da9975735e310475b2362fcaf88dbf6634b8c3f69899a"
+        }
+      ]
+    },
+    {
+      "id": "react-map-gl-adapted-types",
+      "type": "adapted-types",
+      "oracle": "required",
+      "environment": "workspace-node",
+      "project": "react-map-gl-adapted-types",
+      "evidenceOrigin": "repo-authored",
+      "notes": "Compiles the structurally matched public API oracle against Octane with tsrx-tsc.",
+      "execution": {
+        "kind": "typescript",
+        "compiler": "tsrx-tsc",
+        "project": "packages/react-map-gl/typetests/tsconfig.json"
+      },
+      "files": [
+        {
+          "path": "packages/react-map-gl/typetests/public-api.test.tsx",
+          "role": "test",
+          "sha256": "ce6d05a04fe0f72cd55d6846a4d4bf8c5cdbef237315cd853ad261e29b21e66c",
+          "cases": [
+            {
+              "id": "type:373bb348ddbb781e",
+              "testName": "mapbox-public-surface",
+              "fullName": "mapbox-public-surface"
+            },
+            {
+              "id": "type:65e3d412d9de1862",
+              "testName": "maplibre-public-surface",
+              "fullName": "maplibre-public-surface"
+            },
+            {
+              "id": "type:b48a8c96acdd8a61",
+              "testName": "rejected-props",
+              "fullName": "rejected-props"
+            }
+          ]
+        },
+        {
+          "path": "packages/react-map-gl/typetests/tsconfig.json",
+          "role": "support",
+          "sha256": "27c271ed3100594ff76a067fa5ffced088a6cc7fda24ccbc5e5abd7a63f0ed45"
+        },
+        {
+          "path": "packages/react-map-gl/audit/type-parity.json",
+          "role": "support",
+          "sha256": "2d85d7682eb2577e63305a6273b5ae38902d41cc3cf9302710a37871cebc03af"
+        },
+        {
+          "path": "packages/react-map-gl/scripts/check-type-parity.mjs",
+          "role": "support",
+          "sha256": "4f14efccbb7e966ab14da9975735e310475b2362fcaf88dbf6634b8c3f69899a"
+        }
+      ]
+    }
+  ],
+  "divergences": []
+}

@@ -1,0 +1,362 @@
+{
+  "schemaVersion": 1,
+  "project": "react-map-gl-pristine",
+  "roots": [
+    "packages/react-map-gl/tests/pristine"
+  ],
+  "files": [
+    "packages/react-map-gl/tests/pristine/components/components.test.ts",
+    "packages/react-map-gl/tests/pristine/utils/apply-react-style.test.ts",
+    "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+    "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+    "packages/react-map-gl/tests/pristine/utils/style-utils.test.ts",
+    "packages/react-map-gl/tests/pristine/utils/transform.test.ts"
+  ],
+  "tests": [
+    {
+      "id": "runtime:bbf755849faa5896",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Controls"
+    },
+    {
+      "id": "runtime:3ec69e12d3eb3935",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Map"
+    },
+    {
+      "id": "runtime:484f3d48c91c03da",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Map#controlled#delayed-update"
+    },
+    {
+      "id": "runtime:da8caf7fc822e790",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Map#controlled#mirror-back"
+    },
+    {
+      "id": "runtime:628e16ac349d5a3e",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Map#controlled#no-update"
+    },
+    {
+      "id": "runtime:ea0932c239cc18a9",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Map#invalid token"
+    },
+    {
+      "id": "runtime:490a5d75f462ade6",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Map#uncontrolled"
+    },
+    {
+      "id": "runtime:b0112190c1d398f7",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Map#uncontrolled#delayedSettingsUpdate"
+    },
+    {
+      "id": "runtime:88ce59a4e8e385ac",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Marker"
+    },
+    {
+      "id": "runtime:89c56919b0907251",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Popup"
+    },
+    {
+      "id": "runtime:b14bcb34d9320d6f",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Source/Layer"
+    },
+    {
+      "id": "runtime:b14bcb34d9320d6f:2",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox Source/Layer"
+    },
+    {
+      "id": "runtime:3f7d8072b61ed2b8",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "mapbox useMap"
+    },
+    {
+      "id": "runtime:d3715dbe0c0d7ab1",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Controls"
+    },
+    {
+      "id": "runtime:ccf9f2fdd2d1d615",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Map"
+    },
+    {
+      "id": "runtime:d6e721d1484c8095",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Map#controlled#delayed-update"
+    },
+    {
+      "id": "runtime:ddd7a71c794eb8f1",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Map#controlled#mirror-back"
+    },
+    {
+      "id": "runtime:f28849d6fb282fea",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Map#controlled#no-update"
+    },
+    {
+      "id": "runtime:cbb472e668b06917",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Map#uncontrolled"
+    },
+    {
+      "id": "runtime:3a8514c2b0d1c94c",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Marker"
+    },
+    {
+      "id": "runtime:53eee15f4311188c",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Popup"
+    },
+    {
+      "id": "runtime:cc960e3f946ef8f9",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Source/Layer"
+    },
+    {
+      "id": "runtime:cc960e3f946ef8f9:2",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre Source/Layer"
+    },
+    {
+      "id": "runtime:a0932cf3958bb9a2",
+      "file": "packages/react-map-gl/tests/pristine/components/components.test.ts",
+      "fullName": "maplibre useMap"
+    },
+    {
+      "id": "runtime:5047656d1e84938b",
+      "file": "packages/react-map-gl/tests/pristine/utils/apply-react-style.test.ts",
+      "fullName": "mapbox: pristine upstream apply-react-style utility applies numeric DOM style values with React unit semantics"
+    },
+    {
+      "id": "runtime:1b777f798a90311c",
+      "file": "packages/react-map-gl/tests/pristine/utils/apply-react-style.test.ts",
+      "fullName": "maplibre: pristine upstream apply-react-style utility applies numeric DOM style values with React unit semantics"
+    },
+    {
+      "id": "runtime:f8f2015cfe6e57dd",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "mapbox: upstream compare-class-names utility compares \"\" to \"\""
+    },
+    {
+      "id": "runtime:49b0c3f851dc50ee",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "mapbox: upstream compare-class-names utility compares \"marker active\" to \"active  marker \""
+    },
+    {
+      "id": "runtime:3ffa9902ec96d8ff",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "mapbox: upstream compare-class-names utility compares \"marker active\" to \"marker hovered hidden\""
+    },
+    {
+      "id": "runtime:0912c6fde1e9d7ba",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "mapbox: upstream compare-class-names utility compares \"marker active\" to \"marker\""
+    },
+    {
+      "id": "runtime:6537822e54a79d8f",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "mapbox: upstream compare-class-names utility compares \"marker\" to \"marker active\""
+    },
+    {
+      "id": "runtime:a273ceb18118f69d",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "mapbox: upstream compare-class-names utility compares undefined to \"marker\""
+    },
+    {
+      "id": "runtime:b2314b840645a5ff",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "maplibre: upstream compare-class-names utility compares \"\" to \"\""
+    },
+    {
+      "id": "runtime:13ecc71aad16f999",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "maplibre: upstream compare-class-names utility compares \"marker active\" to \"active  marker \""
+    },
+    {
+      "id": "runtime:3f12ca7341fe8681",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "maplibre: upstream compare-class-names utility compares \"marker active\" to \"marker hovered hidden\""
+    },
+    {
+      "id": "runtime:879f135dbdef1c37",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "maplibre: upstream compare-class-names utility compares \"marker active\" to \"marker\""
+    },
+    {
+      "id": "runtime:0d4aa0d3c481b77b",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "maplibre: upstream compare-class-names utility compares \"marker\" to \"marker active\""
+    },
+    {
+      "id": "runtime:435d5d5d24c0ae44",
+      "file": "packages/react-map-gl/tests/pristine/utils/compare-class-names.test.ts",
+      "fullName": "maplibre: upstream compare-class-names utility compares undefined to \"marker\""
+    },
+    {
+      "id": "runtime:198732ea2e1304cf",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares [1,2,3] and [1,2,3]"
+    },
+    {
+      "id": "runtime:50ca28888523c1c8",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares [1,2] and [1,2,3]"
+    },
+    {
+      "id": "runtime:706c2c068fcdb6ee",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares [1,2] and {\"0\":1,\"1\":2}"
+    },
+    {
+      "id": "runtime:0898e77e944a428a",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares null and null"
+    },
+    {
+      "id": "runtime:25949f32545387ee",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares points undefined and [0,0]"
+    },
+    {
+      "id": "runtime:72b29cc3664e70ce",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares points undefined and [0,1]"
+    },
+    {
+      "id": "runtime:3f02305d9729c2fe",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares points undefined and [1,0]"
+    },
+    {
+      "id": "runtime:11884b62315ce326",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares points undefined and undefined"
+    },
+    {
+      "id": "runtime:d612843d601c1fa1",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares points {\"x\":1,\"y\":1} and [1,1]"
+    },
+    {
+      "id": "runtime:e3e5019b2cbaa902",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares undefined and 0"
+    },
+    {
+      "id": "runtime:b8a2cf680418398a",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares {\"x\":0,\"y\":0,\"offset\":[1,-1]} and {\"x\":0,\"y\":0,\"offset\":[1,-1]}"
+    },
+    {
+      "id": "runtime:c4d31440a6ff0415",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares {\"x\":0,\"y\":0,\"z\":0} and {\"x\":0,\"y\":0,\"offset\":[1,-1]}"
+    },
+    {
+      "id": "runtime:05fa38df22126615",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "mapbox: upstream deep-equal utility compares {\"x\":0,\"y\":0} and {\"x\":0,\"y\":0,\"offset\":[1,-1]}"
+    },
+    {
+      "id": "runtime:312d9380bf4b3bd9",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares [1,2,3] and [1,2,3]"
+    },
+    {
+      "id": "runtime:349c2463b7816ade",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares [1,2] and [1,2,3]"
+    },
+    {
+      "id": "runtime:1365e9f0ee204f9f",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares [1,2] and {\"0\":1,\"1\":2}"
+    },
+    {
+      "id": "runtime:81937834879d6c02",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares null and null"
+    },
+    {
+      "id": "runtime:f27b49be2723b67c",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares points undefined and [0,0]"
+    },
+    {
+      "id": "runtime:227bd58b1247efe6",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares points undefined and [0,1]"
+    },
+    {
+      "id": "runtime:eda66f70d9e0918a",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares points undefined and [1,0]"
+    },
+    {
+      "id": "runtime:0352decd818bf2ed",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares points undefined and undefined"
+    },
+    {
+      "id": "runtime:947de4cf93b00305",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares points {\"x\":1,\"y\":1} and [1,1]"
+    },
+    {
+      "id": "runtime:f8d0cba4a7c3c8e8",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares undefined and 0"
+    },
+    {
+      "id": "runtime:6929e4994cdd0e53",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares {\"x\":0,\"y\":0,\"offset\":[1,-1]} and {\"x\":0,\"y\":0,\"offset\":[1,-1]}"
+    },
+    {
+      "id": "runtime:fd3a3e3748105da1",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares {\"x\":0,\"y\":0,\"z\":0} and {\"x\":0,\"y\":0,\"offset\":[1,-1]}"
+    },
+    {
+      "id": "runtime:efe47ca62a72e7dc",
+      "file": "packages/react-map-gl/tests/pristine/utils/deep-equal.test.ts",
+      "fullName": "maplibre: upstream deep-equal utility compares {\"x\":0,\"y\":0} and {\"x\":0,\"y\":0,\"offset\":[1,-1]}"
+    },
+    {
+      "id": "runtime:a8e47e121018584f",
+      "file": "packages/react-map-gl/tests/pristine/utils/style-utils.test.ts",
+      "fullName": "mapbox: upstream style utility normalizes without mutating plain and immutable-like styles"
+    },
+    {
+      "id": "runtime:52e63c1076436521",
+      "file": "packages/react-map-gl/tests/pristine/utils/style-utils.test.ts",
+      "fullName": "maplibre: upstream style utility normalizes without mutating plain and immutable-like styles"
+    },
+    {
+      "id": "runtime:80c676b8726ebd91",
+      "file": "packages/react-map-gl/tests/pristine/utils/transform.test.ts",
+      "fullName": "mapbox: upstream transform utility compares, applies, and reads view state"
+    },
+    {
+      "id": "runtime:6352c497cae54d99",
+      "file": "packages/react-map-gl/tests/pristine/utils/transform.test.ts",
+      "fullName": "maplibre: upstream transform utility converts a transform to view state"
+    },
+    {
+      "id": "runtime:999f66c63b10f605",
+      "file": "packages/react-map-gl/tests/pristine/utils/transform.test.ts",
+      "fullName": "maplibre: upstream transform utility detects requested changes"
+    }
+  ]
+}

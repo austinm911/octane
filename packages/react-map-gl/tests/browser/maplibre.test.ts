@@ -13,6 +13,7 @@ const execFileAsync = promisify(execFile);
 let server: Server | undefined;
 let origin = '';
 let output = '';
+let hasMapboxToken = false;
 
 function startStaticServer(root: string): Promise<Server> {
 	const instance = createServer((request, response) => {
@@ -50,7 +51,9 @@ beforeAll(async () => {
 	if (line === undefined)
 		throw new Error(`MapLibre build helper returned no evidence:
 ${stdout}`);
-	output = JSON.parse(line.slice('__OCTANE_MAPLIBRE_BUILD__'.length)).outDir;
+	const buildEvidence = JSON.parse(line.slice('__OCTANE_MAPLIBRE_BUILD__'.length));
+	output = buildEvidence.outDir;
+	hasMapboxToken = buildEvidence.hasMapboxToken;
 	server = await startStaticServer(output);
 	const address = server.address();
 	if (address === null || typeof address === 'string')
@@ -66,8 +69,8 @@ afterAll(async () => {
 	rmSync(stagedRoot, { recursive: true, force: true });
 });
 
-describe('MapLibre production browser integration', () => {
-	it('builds authored source and loads one real WebGL map with controls, overlays, and style data', async () => {
+describe('real WebGL browser integration', () => {
+	it('keeps MapLibre sources, layers, events, resizing, and a reused map live', async () => {
 		expect(existsSync(resolve(output, 'index.html'))).toBe(true);
 		const { chromium } = await import('playwright');
 		const browser = await chromium.launch({
@@ -82,32 +85,98 @@ describe('MapLibre production browser integration', () => {
 		page.on('pageerror', (error) => errors.push(`pageerror: ${String(error)}`));
 		try {
 			await page.goto(origin, { waitUntil: 'load' });
-			await page.locator('[data-maplibre-app][data-loaded="true"]').waitFor({ timeout: 30_000 });
-			await page.locator('.maplibregl-canvas').waitFor({ timeout: 30_000 });
-			await page.locator('.maplibregl-marker').waitFor({ timeout: 30_000 });
-			await page.locator('.maplibregl-ctrl').first().waitFor({ timeout: 30_000 });
-			const proof = await page.evaluate(() => ({
-				global: (globalThis as any).__octaneMapLibreProof,
-				canvases: document.querySelectorAll('.maplibregl-canvas').length,
-				markers: document.querySelectorAll('.maplibregl-marker').length,
-				controls: document.querySelectorAll('.maplibregl-ctrl').length,
-			}));
-			expect(proof).toEqual({
-				global: { loads: 1, canvases: 1 },
-				canvases: 1,
-				markers: 1,
-				controls: expect.any(Number),
-			});
-			expect(proof.controls).toBeGreaterThan(0);
+			await page.locator('[data-map-app][data-loaded="true"]').waitFor({ timeout: 30_000 });
+			const canvas = page.locator('.maplibregl-canvas');
+			await canvas.waitFor();
+			await page.locator('.maplibregl-popup').waitFor();
+			await expect
+				.poll(() =>
+					page.evaluate(() => ({
+						loads: (globalThis as any).__octaneMapProof.loads,
+						longitude: (globalThis as any).__octaneMap.getSource('proof-source').serialize().data
+							.features[0].geometry.coordinates[0],
+						radius: (globalThis as any).__octaneMap.getPaintProperty(
+							'proof-layer',
+							'circle-radius',
+						),
+					})),
+				)
+				.toEqual({ loads: 1, longitude: 0, radius: 6 });
+
+			await page.locator('#update-style').click();
+			await expect
+				.poll(() =>
+					page.evaluate(() => ({
+						longitude: (globalThis as any).__octaneMap.getSource('proof-source').serialize().data
+							.features[0].geometry.coordinates[0],
+						radius: (globalThis as any).__octaneMap.getPaintProperty(
+							'proof-layer',
+							'circle-radius',
+						),
+					})),
+				)
+				.toEqual({ longitude: 10, radius: 9 });
+			await page.locator('#resize-map').click();
+			await expect
+				.poll(() => page.evaluate(() => (globalThis as any).__octaneMapProof.resizes))
+				.toBeGreaterThan(0);
+			await canvas.click({ position: { x: 100, y: 100 } });
+			await expect
+				.poll(() => page.evaluate(() => (globalThis as any).__octaneMapProof.clicks))
+				.toBe(1);
 
 			await page.locator('#toggle-map').click();
-			await expect.poll(() => page.locator('.maplibregl-canvas').count()).toBe(0);
+			await expect.poll(() => canvas.count()).toBe(0);
 			await page.locator('#toggle-map').click();
-			await expect.poll(() => page.locator('.maplibregl-canvas').count()).toBe(1);
+			await expect.poll(() => canvas.count()).toBe(1);
 			await expect
-				.poll(() => page.evaluate(() => (globalThis as any).__octaneMapLibreProof?.loads))
-				.toBe(2);
+				.poll(() =>
+					page.evaluate(() => ({
+						reusedMap: (globalThis as any).__octaneMapProof.reusedMap,
+						reusedCanvas: (globalThis as any).__octaneMapProof.reusedCanvas,
+					})),
+				)
+				.toEqual({ reusedMap: true, reusedCanvas: true });
 			expect(errors).toEqual([]);
+		} finally {
+			await page.close();
+			await browser.close();
+		}
+	}, 60_000);
+
+	it('loads the modern Mapbox entry with real WebGL, Source, and Layer', async () => {
+		const { chromium } = await import('playwright');
+		const browser = await chromium.launch({
+			headless: true,
+			args: ['--enable-webgl', '--ignore-gpu-blocklist', '--use-angle=swiftshader'],
+		});
+		const page = await browser.newPage({ viewport: { width: 320, height: 240 } });
+		const errors: string[] = [];
+		const responses: string[] = [];
+		page.on('pageerror', (error) => errors.push(String(error)));
+		page.on('response', (response) => responses.push(response.url()));
+		try {
+			await page.goto(`${origin}/?engine=mapbox`, { waitUntil: 'load' });
+			await page.locator('[data-engine="mapbox"][data-loaded="true"]').waitFor({ timeout: 45_000 });
+			await page.locator('.mapboxgl-canvas').waitFor();
+			await page.locator('.mapboxgl-marker').waitFor();
+			await page.locator('.mapboxgl-popup').waitFor();
+			await page.locator('.mapboxgl-ctrl-zoom-in').waitFor();
+			await expect
+				.poll(() =>
+					page.evaluate(() => ({
+						loads: (globalThis as any).__octaneMapProof.loads,
+						radius: (globalThis as any).__octaneMap.getPaintProperty(
+							'proof-layer',
+							'circle-radius',
+						),
+					})),
+				)
+				.toEqual({ loads: 1, radius: 6 });
+			expect(errors).toEqual([]);
+			const hostedRequests = responses.filter((url) => url.includes('api.mapbox.com'));
+			if (hasMapboxToken) expect(hostedRequests.length).toBeGreaterThan(0);
+			else expect(hostedRequests).toEqual([]);
 		} finally {
 			await page.close();
 			await browser.close();
