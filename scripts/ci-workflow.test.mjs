@@ -596,7 +596,7 @@ describe('CI workflow aggregation', () => {
 			reactParityCheck,
 			/relativeFiles: nonVitestShard\.items\.map\(\(item\) => item\.relativeFile\)/,
 		);
-		assert.match(reactParityCheck, /const vitestLanes = loadRequiredVitestLanes\(REPO\)/);
+		assert.match(reactParityCheck, /const vitestLanes = await loadRequiredVitestLanes\(REPO\)/);
 		assert.doesNotMatch(reactParityCheck, /selectParityVitestShard|vitest-lane-timings/);
 		assert.match(reactParityCheck, /reportPath: process\.env\.REACT_PARITY_VITEST_REPORT/);
 		assert.match(reactParityCheck, /createRequiredNonVitestManifestShardPlan/);
@@ -654,6 +654,7 @@ describe('CI workflow aggregation', () => {
 			parityVitestModule.default.test.projects.map((project) => project.test.name).sort(),
 			requiredVitestProjects.sort(),
 		);
+		assert.equal(parityVitestModule.default.test.maxWorkers, process.env.CI ? 2 : undefined);
 		const inputOtpBrowser = parityVitestModule.default.test.projects.find(
 			(project) => project.test.name === 'input-otp-browser',
 		);

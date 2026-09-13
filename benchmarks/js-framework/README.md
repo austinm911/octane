@@ -177,15 +177,18 @@ The opt-in `nested` mode uses three independent 1,000-row descriptor lists throu
 the same compiled `.tsrx` child hole. One list is wrapped in a same-kind array
 with a top-level sibling, giving its implicit leaves a real nested path; the
 second stays flat as a no-work control. A third uses the nested shape with every
-row explicitly keyed, checking that an implicit prefix is never prepared for
-fully keyed siblings. Each also contains a separate explicit key `"0"`; in the
+row explicitly keyed, measuring whether its siblings reuse one wrapper prefix.
+Each also contains a separate explicit key `"0"`; in the
 first two modes it sits beside implicit index zero. An unrelated update uses a
 different, prebuilt descriptor generation, so descriptor construction is outside timing.
 The gate checks order, complete inner HTML, survivor DOM identity, typed
-uncontrolled inputs, and focus. A `JSON.stringify` observer installed before
+uncontrolled inputs, and focus. It also reverses and restores the fully keyed
+siblings, checking exact survivor identity and order through both operations.
+A `JSON.stringify` observer installed before
 the production module loads reports calls for nested implicit identities,
-nested explicit keys, and any shared wrapper-path serialization. Observation
-finishes in a separate browser context before the clean timing run.
+full nested explicit tuples, individual explicit key JSON escaping, and shared
+wrapper-path serialization. Observation finishes in a separate browser context
+before the clean timing run.
 
 From the repository root, build the separate fixture while the runtime is at
 the baseline revision. This uses the normal minified production build:
@@ -199,19 +202,150 @@ cd benchmarks/js-framework/octane-tsrx
 From a second terminal at the repository root, record the baseline:
 
 ```bash
-WORK_MODE=nested WORK_EXPECT_NESTED_JSON=1000 WORK_EXPECT_PATH_JSON=0 TARGET_URL=http://127.0.0.1:5317/nested-work.html WORK_JSON=/tmp/nested-baseline.json node benchmarks/js-framework/style-work.mjs 30
+WORK_MODE=nested WORK_EXPECT_NESTED_JSON=0 WORK_EXPECT_PATH_JSON=1 WORK_EXPECT_MIXED_EXPLICIT_TUPLES=1 WORK_EXPECT_MIXED_EXPLICIT_VALUES=0 WORK_EXPECT_EXPLICIT_TUPLES=1001 WORK_EXPECT_EXPLICIT_VALUES=0 WORK_EXPECT_EXPLICIT_PATH=0 TARGET_URL=http://127.0.0.1:5317/nested-work.html WORK_JSON=/tmp/nested-baseline.json node benchmarks/js-framework/style-work.mjs 30
 ```
 
 After a runtime change, build with `--outDir dist/nested-work-candidate`, serve
 that directory on port 5318, and run the same command with
 `WORK_EXPECT_NESTED_JSON=0`, `WORK_EXPECT_PATH_JSON=1`, `TARGET_URL=http://127.0.0.1:5318/nested-work.html`,
-and `WORK_EXPECTED_HTML_SHA` set to the baseline output's `htmlSha`. Keep both
-built bundles and servers fixed; repeat the identical runner in A–B–B–A order
+`WORK_EXPECT_EXPLICIT_TUPLES=0`, `WORK_EXPECT_EXPLICIT_VALUES=1001`,
+`WORK_EXPECT_EXPLICIT_PATH=1`, `WORK_EXPECT_MIXED_EXPLICIT_TUPLES=0`,
+`WORK_EXPECT_MIXED_EXPLICIT_VALUES=1`, and `WORK_EXPECTED_HTML_SHA` set to the
+baseline output's `htmlSha`. Keep both built bundles and servers fixed; repeat
+the identical runner in A–B–B–A order
 for timing comparisons. Each of 30 samples measures eight toggled updates,
-dividing the elapsed time by eight. The flat and fully explicit lists measure
-how much general browser load changes between runs. Absolute timing differences inside this
-control's variation are inconclusive; the untimed JSON call counts and
-observable state are deterministic gates.
+dividing the elapsed time by eight. The flat and mostly implicit nested lists
+measure browser load and any cost shifted to the existing implicit path. Timing
+differences within the control variation are inconclusive; the JSON call counts
+and observable state are deterministic gates.
+
+On 2026-09-12 (Darwin arm64, Node 26.4.0), the frozen baseline and candidate
+production bundles passed the same HTML, DOM identity, input, focus, and reorder
+checks (`htmlSha` `64dd26ca…9427d92ed1650`). Per update, the fully keyed list
+changed from 1,001 full tuple JSON calls to one wrapper-path JSON call and 1,001
+scalar key JSON calls. The implicit list retained one path JSON call and no
+implicit tuple calls; the flat list made none. Bundle JS grew from 166,305 to
+166,409 bytes (+104); `gzip -n` grew from 53,557 to 53,586 bytes (+29).
+
+| Run | Fully keyed median / p95 (ms) | Nested implicit median / p95 (ms) | Flat median / p95 (ms) |
+| --- | ---: | ---: | ---: |
+| Baseline A1 | 0.550 / 0.575 | 0.550 / 0.575 | 0.500 / 0.550 |
+| Candidate B1 | 0.5625 / 0.6000 | 0.5500 / 0.6000 | 0.5125 / 0.5500 |
+| Candidate B2 | 0.5750 / 0.6125 | 0.5625 / 0.6000 | 0.5125 / 0.5500 |
+| Baseline A2 | 0.5500 / 0.6000 | 0.5375 / 0.5875 | 0.5000 / 0.5250 |
+
+The fully keyed median divided by the flat control was 1.10/1.10 for A1/A2
+and 1.10/1.12 for B1/B2. This fixture establishes less repeated wrapper-path
+serialization, but its timings do not establish a latency gain. These timings
+are environment-specific, and each row uses 30 samples of eight updates.
+
+### List key callback work (opt-in)
+
+`WORK_MODE=key-callback` builds and serves a separate fixture with three cases:
+512 four-row descriptor lists, 512 four-row native mapped lists, and a compiled
+2,048-row `@for` control. Equivalent descriptor/data generations are prepared
+before timing. The compiled control retains its row objects across distinct
+array generations to exercise pure survivor walks. Mapped generations alternate
+numeric and equivalent string keys to protect normalization. Mount, unrelated
+update, keyed reorder, and restore must preserve row order, complete inner HTML,
+survivor nodes, typed inputs, and focus.
+
+The work observer parses readable production output to locate the two key
+callback expressions in the list renderer. Jitless Chromium precise **parent
+block** coverage counts executions of those expressions; callback invocation
+counts would instead scale with rows and are not a creation count. This gate
+reports executed source construction sites, not V8 heap allocations. A second
+browser without coverage runs the same semantic checks and timing against a
+minified production bundle. The compiled `@for` case guards cost added to the
+shared reconciler.
+
+Freeze the baseline's readable and minified artifacts before changing runtime
+code; the label selects an ignored `octane-tsrx/dist/key-callback-{label}/`
+directory. Run these commands from the repository root:
+
+```bash
+WORK_MODE=key-callback WORK_BUILD_LABEL=baseline node benchmarks/js-framework/style-work.mjs 0 --build-only
+WORK_MODE=key-callback WORK_BUILD_LABEL=baseline WORK_EXPECT_CALLBACKS=512 WORK_JSON=/tmp/key-callback-baseline.json node benchmarks/js-framework/style-work.mjs 30 --no-build
+```
+
+Build the candidate separately, then pass the baseline's `semanticSha` to check
+all phases' complete markup. The candidate gate requires zero key callback
+constructions in each list case:
+
+```bash
+WORK_MODE=key-callback WORK_BUILD_LABEL=candidate node benchmarks/js-framework/style-work.mjs 0 --build-only
+WORK_MODE=key-callback WORK_BUILD_LABEL=candidate WORK_EXPECTED_HTML_SHA=YOUR_BASELINE_SHA WORK_JSON=/tmp/key-callback-candidate.json node benchmarks/js-framework/style-work.mjs 30 --no-build
+```
+
+Zero samples run only semantic/work checks. Once both full gates pass, add
+`--timing-only` to skip repeating the jitless observer while retaining all clean
+semantic checks. Keep artifacts fixed and compare identical `--no-build` runs
+in A–B–B–A order. Update and reorder cases have 16 warmup operations and 30
+samples of eight operations, except the very cheap pure compiled update uses
+256 operations per sample for timer resolution. `--compiled-update-only` isolates
+that timing while retaining every semantic case. Override
+`WORK_COMPILED_UPDATE_BATCH=8` to examine the shorter warmup run. Mount has four
+warmups and 30 single-mount samples, with unmount cleanup outside timing. Output includes median/p95 latency,
+Node/Chromium versions, artifact checksums, and minified raw/gzip JS bytes.
+Differences within control or process variance are inconclusive.
+
+Measured on 2026-09-11 against frozen baseline
+`2a667f91b538d028c30ba198b807ed5db373ebb3`, Node 26.4.0, Chromium
+149.0.7827.55, Darwin 25.6.0 arm64. Four fresh processes per revision ran in
+A–B–B–A–A–B–B–A order without concurrent tests. Ranges below are the per-process
+median latencies in milliseconds; the pure compiled update uses the separate
+256-operation comparison. Other cells use the original eight-operation run.
+
+| Case | Operation | Baseline median range (ms) | Candidate median range (ms) |
+| --- | --- | --- | --- |
+| 512 descriptor lists | Mount | 5.200–6.000 | 5.400–5.600 |
+| 512 descriptor lists | Update | 1.325–1.637 | 1.325–1.450 |
+| 512 descriptor lists | Reorder | 14.613–15.875 | 14.513–14.888 |
+| 512 mapped lists | Mount | 3.900–4.200 | 3.700–4.100 |
+| 512 mapped lists | Update | 0.475–0.588 | 0.487–0.488 |
+| 512 mapped lists | Reorder | 13.750–15.425 | 13.638–14.100 |
+| Compiled 2,048-row control | Mount | 3.000–3.500 | 2.800–3.100 |
+| Compiled 2,048-row control | Pure update (256 per sample) | 0.0090–0.0102 | 0.0094–0.0102 |
+| Compiled 2,048-row control | Reorder | 14.625–15.938 | 14.625–16.125 |
+
+All ranges overlap, so these timings support no throughput claim. The original
+short compiled-update run had quantized medians of 0.0125 ms baseline versus
+0.0250 ms candidate. Increasing the batch also increases optimization exposure,
+so the steady result does not rule out an early-run cost. A focused three-way
+comparison found identical approximately 0.0082 ms steady medians for baseline,
+the shared helper, and an inline-dispatch alternative. The inline alternative's
+short-run medians ranged from 0.0125 to 0.0250 ms and added another 226 raw / 78
+gzip bytes, providing no consistent benefit for the extra duplication.
+
+Deterministic work fell from 512 to zero executed callback constructions for
+**each** descriptor-list phase and independently for **each** mapped-list phase.
+Only one of the two source branches executes per list. The compiled control
+executes neither branch. Both revisions pass every order, identity, input, focus,
+and observed/minified parity gate; the combined complete-markup SHA-256 is
+`d07aceedd3930d72653bfc9a08da00722199d3a8ea61f69325c470172a3b01a4`.
+
+Minified fixture JS changed from 176,950 to 177,057 raw bytes and 56,488 to 56,526
+gzip bytes (+107 / +38). Asset-set SHA-256 values are
+`6a5fca951bdd27d1e1eb3dad0d9372b69859daaa0e29d0336af7da7de40372b9` (baseline)
+and `6b19ce09eb24956a00c0da2bdb26557b3bba227ed65aa1b4c2e3492e549522a8` (candidate).
+
+#### Guarded component-map compatibility check
+
+The hydration regression also exposed an existing compiler mismatch: native map
+item roots could use a lite scope, while a later custom-map result needs a full
+component slot. Guarded component-map roots now use compatible slots in both
+modes. The unchanged regression failed before this correction and passes in dev
+and production afterwards.
+
+For both a simple hookless mapped component and the nested-input fixture,
+standard production and server output were byte-identical. Dev output grew by
+5 bytes and production with `autoMemo: false` by 17 bytes as the call changed
+from a lite scope to a full component slot. Those modes pay the additional slot
+bookkeeping required to preserve identity across dispatch changes; these byte
+counts are not a heap-allocation measurement. Ordinary component `@for` output
+was unchanged in all four modes. Rebuilding the production work gate after the
+compiler correction reproduced the exact candidate bundle and readable-source
+checksums above, so its recorded work and timing evidence remains applicable.
 
 ## Keyed-reorder matrix (`run-reorder.mjs`)
 

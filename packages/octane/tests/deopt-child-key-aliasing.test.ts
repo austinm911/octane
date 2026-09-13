@@ -12,7 +12,7 @@ import {
 import { renderToString } from 'octane/server';
 import { mount } from './_helpers';
 import { loadServerFixture } from './_server-fixture';
-import { RowsHole } from './_fixtures/deopt-child-keys.tsrx';
+import { MappedInputRows, RowsHole } from './_fixtures/deopt-child-keys.tsrx';
 
 // Descriptors handed to a template HOLE reach the de-opt keyed list, which
 // derives an internal reconciliation key per child from its wrapper path plus
@@ -34,6 +34,135 @@ const server = loadServerFixture('packages/octane/tests/_fixtures/deopt-child-ke
 function TextHost({ value }: { value: OctaneNode }) {
 	return createElement('p', { 'data-testid': 'text' }, value);
 }
+
+function InputRow({ id }: { id: string }) {
+	return createElement(
+		'li',
+		{ 'data-row': id },
+		createElement('input', { 'data-input': id, defaultValue: id }),
+	);
+}
+
+function NestedInputGroup({ id, reverse }: { id: string; reverse: boolean }) {
+	const keyed = ['0', 'last'].map((key) => createElement(InputRow, { key, id: `${id}-${key}` }));
+	return createElement(
+		'li',
+		{ 'data-group': id },
+		createElement('ul', null, [
+			createElement(InputRow, { id: `${id}-plain` }),
+			...(reverse ? keyed.reverse() : keyed),
+		]),
+	);
+}
+
+describe('lists rendered inside list items', () => {
+	it('keeps independent input state while outer and inner descriptor lists reorder', () => {
+		const rows = (order: string[], reverse: boolean) => [
+			createElement(InputRow, { id: 'plain' }),
+			...order.map((id) => createElement(NestedInputGroup, { key: id, id, reverse })),
+			createElement(InputRow, { id: 'tail' }),
+		];
+		const view = mount(RowsHole, { rows: rows(['0', 'b', 'c'], false) });
+		try {
+			const inputs = new Map(
+				(view.findAll('input') as HTMLInputElement[]).map((input) => [input.dataset.input!, input]),
+			);
+			for (const [id, input] of inputs) input.value = `typed:${id}`;
+			for (const [order, reverse] of [
+				[['c', '0', 'b'], true],
+				[['0', 'b', 'c'], false],
+			] as const) {
+				view.update(RowsHole, { rows: rows([...order], reverse) });
+				expect(view.findAll('[data-group]').map((node) => node.getAttribute('data-group'))).toEqual(
+					order,
+				);
+				expect(view.findAll('input').map((node) => node.getAttribute('data-input'))).toEqual([
+					'plain',
+					...order.flatMap((id) =>
+						(reverse ? ['plain', 'last', '0'] : ['plain', '0', 'last']).map(
+							(key) => `${id}-${key}`,
+						),
+					),
+					'tail',
+				]);
+				for (const [id, input] of inputs) {
+					expect(view.find(`[data-input="${id}"]`)).toBe(input);
+					expect(input.value).toBe(`typed:${id}`);
+				}
+			}
+		} finally {
+			view.unmount();
+		}
+	});
+
+	it.each(['native map', 'custom map'] as const)(
+		'adopts mapped inputs through %s and retains them across map modes and nested reorders',
+		(mode) => {
+			const rows = (order: string[], reverse: boolean, custom: boolean) => {
+				const values = order.map((id) => ({
+					id,
+					label: id,
+					children: createElement('ul', null, [
+						createElement(NestedInputGroup, { key: 'nested', id: `${id}-nested`, reverse }),
+					]),
+				}));
+				if (custom) {
+					Object.defineProperty(values, 'map', {
+						value(callback: (value: (typeof values)[number], index: number) => unknown) {
+							return Array.prototype.map.call(this, callback);
+						},
+					});
+				}
+				return values;
+			};
+			const initial = ['0', 'b', 'c'];
+			const container = document.createElement('div');
+			document.body.appendChild(container);
+			container.innerHTML = renderToString(server.MappedInputRows, {
+				rows: rows(initial, false, false),
+			}).html;
+			const inputs = new Map(
+				Array.from(container.querySelectorAll<HTMLInputElement>('input'), (input) => [
+					input.dataset.input!,
+					input,
+				]),
+			);
+			for (const [id, input] of inputs) input.value = `typed:${id}`;
+			const errors: unknown[] = [];
+			const root = hydrateRoot(
+				container,
+				MappedInputRows,
+				{ rows: rows(initial, false, mode === 'custom map') },
+				{ onRecoverableError: (error) => errors.push(error) },
+			);
+			try {
+				flushSync(() => {});
+				for (const [order, reverse, custom] of [
+					[initial, false, mode === 'custom map'],
+					[['c', '0', 'b'], true, mode === 'native map'],
+					[initial, false, mode === 'custom map'],
+				] as const) {
+					flushSync(() =>
+						root.render(MappedInputRows, { rows: rows([...order], reverse, custom) }),
+					);
+					expect(
+						Array.from(container.querySelectorAll('.mapped-rows > li'), (node) =>
+							node.getAttribute('data-row'),
+						),
+					).toEqual(order);
+					for (const [id, input] of inputs) {
+						expect(container.querySelector(`[data-input="${id}"]`)).toBe(input);
+						expect(input.value).toBe(`typed:${id}`);
+					}
+				}
+				expect(errors).toEqual([]);
+			} finally {
+				root.unmount();
+				container.remove();
+			}
+		},
+	);
+});
 
 describe('scalar host children', () => {
 	it('updates strings and numbers without replacing the surviving text node', () => {
@@ -278,6 +407,7 @@ describe('de-opt child keys — wrapper boundaries survive the top-level fast pa
 		'keeps nested sibling inputs through keyed wrapper reorders after %s',
 		(mode) => {
 			const escaped = 'quote"\\slash\n\u0000\ud800';
+			const leafKeys = [escaped, '\udc00', '\\ud800', '\\udc00', '0'];
 			const wrapperKeys = {
 				first: `first:${escaped}`,
 				second: `second:${escaped}`,
@@ -289,7 +419,7 @@ describe('de-opt child keys — wrapper boundaries survive the top-level fast pa
 					key === undefined ? { 'data-row': id } : { key, 'data-row': id },
 					createElement('input', { 'data-input': id, defaultValue: id }),
 				);
-			const group = (name: (typeof groupNames)[number]) =>
+			const group = (name: (typeof groupNames)[number], reverse: boolean) =>
 				createElement(
 					Fragment,
 					{ key: wrapperKeys[name] },
@@ -298,17 +428,19 @@ describe('de-opt child keys — wrapper boundaries survive the top-level fast pa
 					positionalChildren([
 						row(`${name}-inner-0`),
 						row(`${name}-inner-key-0`, '0'),
-						row(`${name}-inner-escaped`, escaped),
+						...(reverse ? [...leafKeys].reverse() : leafKeys).map((key) =>
+							row(`${name}-inner-escaped-${leafKeys.indexOf(key)}`, `leaf:${key}`),
+						),
 					]),
 				);
 			const pathLikeKey = JSON.stringify([
 				['keyed-fragment', wrapperKeys.first, 'wrapper', 2],
 				'key',
-				escaped,
+				`leaf:${escaped}`,
 			]);
 			const rows = (reverse: boolean) =>
 				positionalChildren([
-					...(reverse ? [...groupNames].reverse() : groupNames).map(group),
+					...(reverse ? [...groupNames].reverse() : groupNames).map((name) => group(name, reverse)),
 					row('outside', pathLikeKey),
 				]);
 			const order = (reverse: boolean) => [
@@ -317,7 +449,9 @@ describe('de-opt child keys — wrapper boundaries survive the top-level fast pa
 					`${name}-outer-escaped`,
 					`${name}-inner-0`,
 					`${name}-inner-key-0`,
-					`${name}-inner-escaped`,
+					...(reverse ? [...leafKeys].reverse() : leafKeys).map(
+						(key) => `${name}-inner-escaped-${leafKeys.indexOf(key)}`,
+					),
 				]),
 				'outside',
 			];
@@ -328,11 +462,19 @@ describe('de-opt child keys — wrapper boundaries survive the top-level fast pa
 			if (mode === 'server hydration') {
 				container.innerHTML = renderToString(server.RowsHole, { rows: initialRows }).html;
 			}
+			const serverInputs = Array.from(container.querySelectorAll<HTMLInputElement>('input'));
+			for (const input of serverInputs) input.value = `typed:${input.dataset.input}`;
+			const errors: unknown[] = [];
 			let root: ReturnType<typeof createRoot> | undefined;
 			try {
 				root =
 					mode === 'server hydration'
-						? hydrateRoot(container, RowsHole, { rows: initialRows })
+						? hydrateRoot(
+								container,
+								RowsHole,
+								{ rows: initialRows },
+								{ onRecoverableError: (error) => errors.push(error) },
+							)
 						: createRoot(container);
 				const activeRoot = root;
 				if (mode === 'client mount') activeRoot.render(RowsHole, { rows: initialRows });
@@ -344,6 +486,12 @@ describe('de-opt child keys — wrapper boundaries survive the top-level fast pa
 					]),
 				);
 				expect([...inputs.keys()]).toEqual(order(false));
+				if (mode === 'server hydration') {
+					for (const [index, input] of [...inputs.values()].entries()) {
+						expect(input).toBe(serverInputs[index]);
+					}
+					for (const [id, input] of inputs) expect(input.value).toBe(`typed:${id}`);
+				}
 				for (const [id, input] of inputs) input.value = `typed:${id}`;
 				const focused = inputs.get('second-inner-0')!;
 				focused.focus();
@@ -359,6 +507,7 @@ describe('de-opt child keys — wrapper boundaries survive the top-level fast pa
 					}
 					expect(document.activeElement).toBe(focused);
 				}
+				expect(errors).toEqual([]);
 			} finally {
 				root?.unmount();
 				container.remove();
@@ -366,48 +515,264 @@ describe('de-opt child keys — wrapper boundaries survive the top-level fast pa
 		},
 	);
 
-	it('preserves nested input state when array serialization is customized', () => {
-		const names = ['first', 'second'];
+	it.each(['implicit', 'explicit'] as const)(
+		'preserves nested %s input state when array serialization is customized',
+		(keyMode) => {
+			const names = ['first', 'second'];
+			const rows = (reverse: boolean) =>
+				(reverse ? [...names].reverse() : names).map((name) =>
+					createElement(
+						Fragment,
+						{ key: name },
+						...[0, 1].map((index) =>
+							createElement(
+								'li',
+								keyMode === 'explicit' ? { key: index } : null,
+								createElement('input', { 'data-input': `${name}-${index}` }),
+							),
+						),
+					),
+				);
+			const r = mount(RowsHole, { rows: rows(false) });
+			const previous = Object.getOwnPropertyDescriptor(Array.prototype, 'toJSON');
+			try {
+				const inputs = r.findAll('input') as HTMLInputElement[];
+				for (const input of inputs) input.value = `typed:${input.dataset.input}`;
+				inputs[0].focus();
+				// An application serializer can customize standalone primitive arrays
+				// while leaving arrays embedded in another value unchanged.
+				Object.defineProperty(Array.prototype, 'toJSON', {
+					configurable: true,
+					value(this: unknown[], key: string) {
+						return key === '' && this.every((value) => ['string', 'number'].includes(typeof value))
+							? this.join(':')
+							: this;
+					},
+				});
+				for (const reverse of [true, false]) {
+					r.update(RowsHole, { rows: rows(reverse) });
+					expect(r.findAll('input')).toEqual(
+						reverse ? [inputs[2], inputs[3], inputs[0], inputs[1]] : inputs,
+					);
+					for (const input of inputs) {
+						expect(r.find(`[data-input="${input.dataset.input}"]`)).toBe(input);
+						expect(input.value).toBe(`typed:${input.dataset.input}`);
+					}
+					expect(document.activeElement).toBe(inputs[0]);
+				}
+			} finally {
+				if (previous) Object.defineProperty(Array.prototype, 'toJSON', previous);
+				else Reflect.deleteProperty(Array.prototype, 'toJSON');
+				r.unmount();
+			}
+		},
+	);
+
+	it('preserves keyed input state with an application JSON serializer', () => {
+		const stringify = JSON.stringify;
+		const names = ['first', 'second', 'third'];
 		const rows = (reverse: boolean) =>
-			(reverse ? [...names].reverse() : names).map((name) =>
-				createElement(
-					Fragment,
-					{ key: name },
-					...[0, 1].map((index) =>
-						createElement('li', null, createElement('input', { 'data-input': `${name}-${index}` })),
+			createElement(
+				Fragment,
+				{ key: 'wrapper' },
+				...(reverse ? [...names].reverse() : names).map((name) =>
+					createElement(
+						'li',
+						{ key: name },
+						createElement('input', { 'data-input': name, defaultValue: name }),
 					),
 				),
 			);
 		const r = mount(RowsHole, { rows: rows(false) });
-		const previous = Object.getOwnPropertyDescriptor(Array.prototype, 'toJSON');
 		try {
 			const inputs = r.findAll('input') as HTMLInputElement[];
 			for (const input of inputs) input.value = `typed:${input.dataset.input}`;
-			inputs[0].focus();
-			// An application serializer can customize standalone primitive arrays
-			// while leaving arrays embedded in another value unchanged.
-			Object.defineProperty(Array.prototype, 'toJSON', {
-				configurable: true,
-				value(this: unknown[], key: string) {
-					return key === '' && this.every((value) => ['string', 'number'].includes(typeof value))
-						? this.join(':')
-						: this;
-				},
-			});
+			JSON.stringify = function (this: unknown, value: unknown) {
+				if (this !== JSON) throw new Error('JSON serializer lost its receiver');
+				return stringify(typeof value === 'string' ? `application:${value}` : value);
+			};
 			for (const reverse of [true, false]) {
 				r.update(RowsHole, { rows: rows(reverse) });
-				expect(r.findAll('input')).toEqual(
-					reverse ? [inputs[2], inputs[3], inputs[0], inputs[1]] : inputs,
-				);
+				expect(r.findAll('input')).toEqual(reverse ? [...inputs].reverse() : inputs);
 				for (const input of inputs) {
 					expect(r.find(`[data-input="${input.dataset.input}"]`)).toBe(input);
 					expect(input.value).toBe(`typed:${input.dataset.input}`);
 				}
-				expect(document.activeElement).toBe(inputs[0]);
 			}
 		} finally {
-			if (previous) Object.defineProperty(Array.prototype, 'toJSON', previous);
-			else Reflect.deleteProperty(Array.prototype, 'toJSON');
+			JSON.stringify = stringify;
+			r.unmount();
+		}
+	});
+
+	it('observes later mutations of arrays retained by an application serializer', () => {
+		const stringify = JSON.stringify;
+		const names = ['first', 'second', 'third'];
+		const children = names.map((name) =>
+			createElement(
+				'li',
+				{ key: name },
+				createElement('input', { 'data-input': name, defaultValue: name }),
+			),
+		);
+		const r = mount(RowsHole, {
+			rows: createElement(Fragment, { key: 'retained' }, children),
+		});
+		try {
+			const inputs = r.findAll('input') as HTMLInputElement[];
+			for (const input of inputs) input.value = `typed:${input.dataset.input}`;
+			const retained: unknown[][] = [];
+			const replaceRetainedValue = (before: string, after: string) => {
+				for (const array of retained) {
+					for (let i = 0; i < array.length; i++) {
+						if (array[i] === before) array[i] = after;
+					}
+				}
+			};
+			const nextChildren = [...children];
+			Object.defineProperty(nextChildren, 1, {
+				get() {
+					replaceRetainedValue('temporary', 'retained');
+					return children[1];
+				},
+			});
+			Object.defineProperty(nextChildren, 2, {
+				get() {
+					replaceRetainedValue('retained', 'changed');
+					return children[2];
+				},
+			});
+			const nextRows = createElement(Fragment, { key: 'temporary' }, nextChildren);
+			JSON.stringify = function (value: unknown) {
+				JSON.stringify = stringify;
+				return stringify(value, (_property, child: unknown) => {
+					if (Array.isArray(child)) retained.push(child);
+					return child;
+				});
+			};
+			try {
+				r.update(RowsHole, { rows: nextRows });
+			} finally {
+				JSON.stringify = stringify;
+			}
+			expect(r.findAll('input').map((input) => input.getAttribute('data-input'))).toEqual(names);
+			expect(r.find('[data-input="second"]')).toBe(inputs[1]);
+			expect(inputs[1].value).toBe('typed:second');
+			expect(r.find('[data-input="third"]')).not.toBe(inputs[2]);
+			expect((r.find('[data-input="third"]') as HTMLInputElement).value).toBe('third');
+		} finally {
+			JSON.stringify = stringify;
+			r.unmount();
+		}
+	});
+
+	it('preserves keyed input state when application string conversion customizes JSON', () => {
+		const string = String;
+		const names = ['first', 'second', 'third'];
+		const rows = (reverse: boolean) =>
+			createElement(
+				Fragment,
+				{ key: 'wrapper' },
+				...(reverse ? [...names].reverse() : names).map((name) =>
+					createElement(
+						'li',
+						{ key: `key:${name}` },
+						createElement('input', { 'data-input': name, defaultValue: name }),
+					),
+				),
+			);
+		const r = mount(RowsHole, { rows: rows(false) });
+		try {
+			const inputs = r.findAll('input') as HTMLInputElement[];
+			for (const input of inputs) input.value = `typed:${input.dataset.input}`;
+			for (const reverse of [true, false]) {
+				const nextRows = rows(reverse);
+				globalThis.String = new Proxy(string, {
+					apply(target, receiver, args) {
+						const key = args[0];
+						if (typeof key === 'string' && key.startsWith('key:')) {
+							return {
+								toJSON(property: string) {
+									return property === '' ? `standalone:${key}` : key;
+								},
+							};
+						}
+						return Reflect.apply(target, receiver, args);
+					},
+				});
+				try {
+					r.update(RowsHole, { rows: nextRows });
+				} finally {
+					globalThis.String = string;
+				}
+				expect(r.findAll('input')).toEqual(reverse ? [...inputs].reverse() : inputs);
+				for (const input of inputs) {
+					expect(r.find(`[data-input="${input.dataset.input}"]`)).toBe(input);
+					expect(input.value).toBe(`typed:${input.dataset.input}`);
+				}
+			}
+		} finally {
+			globalThis.String = string;
+			r.unmount();
+		}
+	});
+
+	it('observes serializer changes during key conversion and stops after the first error', () => {
+		const stringify = JSON.stringify;
+		const string = String;
+		const error = new Error('application serializer failed');
+		const converted: string[] = [];
+		const names = ['before', 'change', 'after', 'unreached'];
+		const rows = () =>
+			createElement(
+				Fragment,
+				{ key: 'wrapper' },
+				...names.map((name) =>
+					createElement(
+						'li',
+						{ key: `key:${name}` },
+						createElement('input', { 'data-input': name, defaultValue: name }),
+					),
+				),
+			);
+		const r = mount(RowsHole, { rows: rows() });
+		try {
+			const original = r.find('input') as HTMLInputElement;
+			original.value = 'typed';
+			const nextRows = rows();
+			globalThis.String = new Proxy(string, {
+				apply(target, receiver, args) {
+					const key = args[0];
+					if (typeof key === 'string' && key.startsWith('key:')) {
+						converted.push(key);
+						if (key === 'key:change') {
+							JSON.stringify = () => {
+								throw error;
+							};
+						}
+					}
+					return Reflect.apply(target, receiver, args);
+				},
+			});
+			let caught: unknown;
+			try {
+				r.update(RowsHole, { rows: nextRows });
+			} catch (failure) {
+				caught = failure;
+			} finally {
+				JSON.stringify = stringify;
+				globalThis.String = string;
+			}
+			expect(caught).toBe(error);
+			expect(converted).toEqual(['key:before', 'key:change', 'key:after']);
+			expect(r.container.childNodes.length).toBe(0);
+			r.update(RowsHole, { rows: rows() });
+			expect(r.findAll('input').map((input) => input.getAttribute('data-input'))).toEqual(names);
+			expect(r.find('input')).not.toBe(original);
+			expect((r.find('input') as HTMLInputElement).value).toBe('before');
+		} finally {
+			JSON.stringify = stringify;
+			globalThis.String = string;
 			r.unmount();
 		}
 	});
