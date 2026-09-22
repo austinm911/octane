@@ -162,6 +162,6 @@ export function ZeroProvider<
 	}, [auth, zero]);
 
 	@if (zero) {
-		<ZeroContext.Provider value={zero}>{children}</ZeroContext.Provider>
+		<ZeroContext value={zero}>{children}</ZeroContext>
 	}
 }
