@@ -1,49 +1,45 @@
 # @octanejs/blocknote
 
-Octane binding for [`@blocknote/react`](https://www.npmjs.com/package/@blocknote/react) — block-based rich text editors.
+Headless [BlockNote](https://www.blocknotejs.org) editor for Octane. It covers the editor surface of `@blocknote/react@0.53.0` without the default UI, and uses `@blocknote/core` unchanged.
+
+## Install
+
+```bash
+npm install @octanejs/blocknote
+pnpm add @octanejs/blocknote
+```
 
 ## Usage
 
 ```tsx
-import {
-  BlockNoteContext,
-  useBlockNoteContext,
-  useBlockNoteEditor,
-  useCreateBlockNote,
-} from '@octanejs/blocknote';
+import { BlockNoteViewRaw, useCreateBlockNote } from '@octanejs/blocknote';
+
+export function Editor() @{
+	const editor = useCreateBlockNote({
+		initialContent: [{ type: 'paragraph', content: 'Hello' }],
+	});
+
+	<BlockNoteViewRaw editor={editor} onChange={() => console.log(editor.document)} />
+}
 ```
 
-## Compatibility
+`BlockNoteViewRaw` imports `@blocknote/core/style.css`. Toolbars, menus, and other UI are yours to build. Render them as children, read the editor with `useBlockNoteEditor()`, and use `renderEditor={false}` with `<BlockNoteViewEditor />` to control where the editable area goes.
 
-Pinned to `@blocknote/react@0.53.0`. Reuses `@blocknote/core` unchanged; React binding reimplemented on Octane with `@octanejs/tiptap` at the editor boundary.
+## Exports
 
-### Milestone 1 exports
-
-- `useCreateBlockNote`
-- `useBlockNoteEditor`
-- `BlockNoteContext` / `useBlockNoteContext`
-
-Only the four authored modules behind these exports are included by the package
-files allowlist and checked by the package's CI typecheck. The rest of the
-mechanical port remains private staging source until later milestones make it
-part of the supported surface.
-
-### Mechanical port
-
-```bash
-pnpm port-upstream   # from packages/blocknote — copies upstream src with transforms
-```
-
-Review files flagged `CHECKPOINT` in `scripts/port-upstream.mjs` before shipping milestone 1.
+- `BlockNoteViewRaw`, `BlockNoteViewEditor`, `BlockNoteViewProps`
+- `BlockNoteContext`, `useBlockNoteContext`, `BlockNoteContextValue`
+- `useCreateBlockNote`, `useBlockNoteEditor`
+- `useEditorChange`, `useEditorSelectionChange`, `usePrefersColorScheme`
+- `PortalElementsMap`, `PortalTarget`
 
 ## Known differences
 
-None documented yet.
+- No default UI. `BlockNoteView`, `BlockNoteDefaultUI`, `ComponentsContext`, and the toolbar, menu, side-menu, table-handle, and comment components are not provided. Upstream disables all of them when no components context exists, so `BlockNoteViewRaw` here matches that upstream configuration.
+- `BlockNoteViewRaw` does not accept the default UI flags (`formattingToolbar`, `slashMenu`, and so on). `portalElements` reads only `default`.
+- Custom React block, inline content, and style specs are not provided.
+- Event handlers receive native DOM events, as everywhere in Octane.
 
-## Tests
+## Provenance
 
-Organized per the hook-form / react-parity contract:
-
-- `tests/conformance/` — package-authored contract tests (ordinary CI shards)
-- `tests/differential/` — Octane vs React oracle (dedicated project + `globalSetup`)
-- Vitest projects declare `testExecution.group: 'react-parity'` on parity-owned lanes
+Independently authored and MIT licensed. See [UPSTREAM.md](./UPSTREAM.md).
