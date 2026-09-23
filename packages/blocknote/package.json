@@ -55,5 +55,12 @@
   },
   "peerDependencies": {
     "octane": "workspace:^0.4.0"
+  },
+  "octane": {
+    "hookSlots": {
+      "manual": [
+        "src"
+      ]
+    }
   }
 }

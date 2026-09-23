@@ -33,6 +33,10 @@ export function Editor() @{
 - `useEditorChange`, `useEditorSelectionChange`, `usePrefersColorScheme`
 - `PortalElementsMap`, `PortalTarget`
 
+## Server rendering
+
+Server rendering is supported. The server emits the view shell, and the editor mounts into it on the client after hydration. Document content is not part of the server HTML. Without a `theme` prop the server renders the light scheme, and the system scheme applies after hydration. Pass `theme` to fix it on both sides.
+
 ## Known differences
 
 - No default UI. `BlockNoteView`, `BlockNoteDefaultUI`, `ComponentsContext`, and the toolbar, menu, side-menu, table-handle, and comment components are not provided. Upstream disables all of them when no components context exists, so `BlockNoteViewRaw` here matches that upstream configuration.

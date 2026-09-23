@@ -144,7 +144,7 @@
         "Custom React block, inline content, and style specs are not provided.",
         "Handlers receive native DOM events rather than React synthetic events."
       ],
-      "ssr": "Not yet evaluated.",
+      "ssr": "Server rendering emits the BlockNoteViewRaw shell (container and empty editor host) without touching the DOM; the editor mounts on the client. usePrefersColorScheme uses a no-preference server snapshot, so server HTML and hydration agree on the light fallback and the live system scheme applies after hydration. Covered by the blocknote-ssr (Node) and blocknote-hydration projects.",
       "verified": "2026-09-23"
     },
     {
