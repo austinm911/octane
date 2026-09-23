@@ -294,6 +294,7 @@ Scope/evidence last checked: 2026-09-23.
 - @blocknote/core is reused unchanged as a runtime dependency and supplies @blocknote/core/style.css.
 - Conformance tests mount real BlockNote editors in jsdom for view rendering, onChange, editable remounts, renderEditor=false placement, and unmount.
 - useCreateBlockNote still constructs the editor during server render, matching upstream; construction needs no DOM and the instance is discarded with the request.
+- Published types reach @blocknote/core → @shikijs/types, which uses Symbol.dispose. Consumers need lib esnext.disposable (or ES2025+) or skipLibCheck; the strict ES2024 browser consumer check lists this in packedTsrxSourceExceptions, like @octanejs/lexical.
 
 ## @octanejs/calendar
 

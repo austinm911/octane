@@ -9430,6 +9430,7 @@ export default defineConfig({
 					include: [
 						'packages/blocknote/tests/**/*.test.ts',
 						'!packages/blocknote/tests/ssr/**/*.test.ts',
+						'!packages/blocknote/tests/browser/**/*.test.ts',
 					],
 					environment: 'jsdom',
 					testTimeout: 30_000,
@@ -9458,6 +9459,17 @@ export default defineConfig({
 				},
 				plugins: [octaneServerFixtures(import.meta.dirname), octane()],
 				resolve: { alias: BLOCKNOTE_SOURCE_ALIASES },
+			},
+			{
+				testExecution: { group: 'heavy-browser' },
+				test: {
+					name: 'blocknote-browser',
+					include: ['packages/blocknote/tests/browser/**/*.test.ts'],
+					environment: 'node',
+					globals: false,
+					testTimeout: 60_000,
+					hookTimeout: 60_000,
+				},
 			},
 		],
 	},
