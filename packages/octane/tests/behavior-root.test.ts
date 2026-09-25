@@ -387,6 +387,179 @@ describe('behavior-only roots', () => {
 	});
 
 	for (const dev of [false, true]) {
+		for (const styles of ['provider', 'single property', 'multiple properties', 'native reads']) {
+			it(`hands off a host with a known unbound provider spread and ${styles} styles (${dev ? 'dev' : 'prod'})`, () => {
+				const externalStyle =
+					styles === 'single property'
+						? ' style={unbound({ color: props.color })}'
+						: styles === 'multiple properties'
+							? ' style={unbound({ color: props.color, backgroundColor: props.background })}'
+							: '';
+				const source = `${styles === 'native reads' ? "import 'octane/signals';" : ''}
+import { unbound } from 'octane/behavior';
+import * as styles from 'host-styles';
+export function StyledHost(props) @{ 'use dom bindings';
+ <section {...unbound(styles.attrs(props.styles))}${externalStyle} data-active={props.active ? '' : undefined}>{unbound(props.children)}</section>
+}
+export function StyledApplication(props) @{
+ <StyledHost styles={props.styles} color={props.color} background={props.background} active={props.active}><span>{props.label as string}</span></StyledHost>
+}`;
+				const attrs = vi.fn((value: unknown) => value);
+				const initial = {
+					active: false,
+					color: 'red',
+					background: 'white',
+					styles: {
+						class: 'server-style',
+						...(!externalStyle ? { style: { color: 'red' } } : {}),
+						'data-style-src': 'fixture',
+					},
+					label: 'Server child',
+				};
+				const fixture = authoredPresentation(
+					'StyledHost',
+					initial,
+					dev,
+					source,
+					{ 'host-styles': { attrs } },
+					{
+						knownAttributeSpreads: [
+							{
+								source: 'host-styles',
+								imported: '*',
+								members: ['attrs'],
+								fields: ['class', ...(!externalStyle ? ['style'] : []), 'data-style-src'],
+							},
+						],
+					},
+					['active'],
+				);
+				container.innerHTML = renderToString(fixture.server.StyledApplication, initial).html;
+				const section = container.querySelector('section')!;
+				const child = section.firstElementChild;
+				const error = vi.spyOn(console, 'error');
+				const warn = vi.spyOn(console, 'warn');
+				attrs.mockClear();
+				let binding: DomBindings.BindingHandle | undefined;
+				try {
+					binding = fixture.attach(section, fixture.state);
+					fixture.publish({ active: true });
+					expect(section.hasAttribute('data-active')).toBe(true);
+					expect(section.className).toBe('server-style');
+					expect(section.style.color).toBe('red');
+					expect(attrs).not.toHaveBeenCalled();
+					const client = fixture.loadClient();
+					hydratedRoot = hydrateRoot(
+						container,
+						client.StyledApplication,
+						{ ...initial, active: true },
+						{ bindingLeases: [binding] },
+					);
+					flushSync(() => {});
+					flushEffects();
+					expect(container.querySelector('section')).toBe(section);
+					expect(section.firstElementChild).toBe(child);
+					expect(section.textContent).toBe('Server child');
+					expect(section.hasAttribute('data-active')).toBe(true);
+					expect(section.className).toBe('server-style');
+					expect(section.style.color).toBe('red');
+					expect(section.getAttribute('data-style-src')).toBe('fixture');
+					expect(fixture.cleanup).toHaveBeenCalledOnce();
+					fixture.publish({ active: false });
+					binding.refresh();
+					expect(section.hasAttribute('data-active')).toBe(true);
+					flushSync(() =>
+						hydratedRoot!.render(client.StyledApplication, {
+							active: false,
+							color: 'blue',
+							background: 'black',
+							styles: {
+								class: 'live-style',
+								...(!externalStyle ? { style: { color: 'blue' } } : {}),
+								'data-style-src': 'live',
+							},
+							label: 'Live child',
+						}),
+					);
+					expect(section.firstElementChild).toBe(child);
+					expect(section.textContent).toBe('Live child');
+					expect(section.hasAttribute('data-active')).toBe(false);
+					expect(section.className).toBe('live-style');
+					expect(section.style.color).toBe('blue');
+					if (styles === 'multiple properties') expect(section.style.backgroundColor).toBe('black');
+					expect(section.getAttribute('data-style-src')).toBe('live');
+					binding.dispose();
+					hydratedRoot!.unmount();
+					hydratedRoot = undefined;
+					expect(fixture.cleanup).toHaveBeenCalledOnce();
+					expect(error).not.toHaveBeenCalled();
+					expect(warn).not.toHaveBeenCalled();
+				} finally {
+					binding?.dispose();
+					error.mockRestore();
+					warn.mockRestore();
+				}
+			});
+		}
+		it(`keeps unknown unbound spreads ineligible for host handoff (${dev ? 'dev' : 'prod'})`, () => {
+			const source = `import { unbound } from 'octane/behavior';
+export function UnknownHost(props) @{ 'use dom bindings';
+ <section {...unbound(props.attrs)} data-active={props.active ? '' : undefined}>{unbound(props.children)}</section>
+}`;
+			const fixture = authoredPresentation(
+				'UnknownHost',
+				{ attrs: { class: 'retained' }, active: false },
+				dev,
+				source,
+			);
+			container.innerHTML = fixture.html;
+			const section = container.querySelector('section')!;
+			const binding = fixture.attach(section, fixture.state);
+			try {
+				fixture.publish({ active: true });
+				expect(() =>
+					hydrateRoot(container, fixture.loadClient().UnknownHost, fixture.state.getSnapshot(), {
+						bindingLeases: [binding],
+					}),
+				).toThrow(/active fixed native views|#77/);
+				expect(fixture.cleanup).not.toHaveBeenCalled();
+				expect(section.className).toBe('retained');
+				expect(section.hasAttribute('data-active')).toBe(true);
+				fixture.publish({ active: false });
+				expect(section.hasAttribute('data-active')).toBe(false);
+			} finally {
+				binding.dispose();
+			}
+		});
+
+		it(`retains known unbound provider ownership checks (${dev ? 'dev' : 'prod'})`, () => {
+			const source = `import { unbound } from 'octane/behavior';
+import * as styles from 'host-styles';
+export function CollisionHost(props) @{ 'use dom bindings';
+ <section {...unbound(styles.attrs(props.styles))} data-active={props.active ? '' : undefined}>{unbound(props.children)}</section>
+}`;
+			for (const fields of [['data-active'], ['children'], ['data-octane-bindings']]) {
+				expect(() =>
+					authoredPresentation(
+						'CollisionHost',
+						{ styles: {}, active: false },
+						dev,
+						source,
+						{ 'host-styles': { attrs: (value: unknown) => value } },
+						{
+							knownAttributeSpreads: [
+								{ source: 'host-styles', imported: '*', members: ['attrs'], fields },
+							],
+						},
+					),
+				).toThrow(
+					/unbound spreads|known.*spread|reserved|structural|Invalid knownAttributeSpreads/,
+				);
+			}
+		});
+	}
+
+	for (const dev of [false, true]) {
 		it(`preserves native renderer event policy for explicitly unbound lowercase props (${dev ? 'dev' : 'prod'})`, () => {
 			const source = `import { unbound } from 'octane/behavior';
 export function EventHost(props) @{ 'use dom bindings';
@@ -7733,6 +7906,548 @@ export function Slotted({ label, rows, kind }) @{ 'use dom bindings';
 				inlineHandle.dispose();
 			}
 			expect(inlineOrder).toEqual(['attach A', 'detach A', 'attach B', 'detach B']);
+		});
+
+		it(`diagnoses imported live signal snapshots during binding activation (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `imported-signal-snapshots-${dev}` });
+			const count$ = scope.signal$('count', 1);
+			const sampled = scope.signal$('sampled', 2);
+			try {
+				for (const [imports, setup, expression, expected] of [
+					["import { count$ } from 'state';", '', 'count$.get()', '1'],
+					["import { count$ } from 'state';", '', "count$['get']()", '1'],
+					["import { count$ } from 'state';", '', 'count$.get?.()', '1'],
+					["import { count$ } from 'state';", '', 'count$?.get()', '1'],
+					["import { count$ } from 'state';", '', "count$?.['get']?.()", '1'],
+					["import * as state from 'state';", '', 'state.count$.get()', '1'],
+					["import { state } from 'state';", '', 'state?.count$.get()', '1'],
+					["import { count$ } from 'state';", 'const value = count$.get();', 'value', '1'],
+					["import { count$ } from 'state';", 'const handle = count$;', 'handle.get()', '1'],
+					["import { count$ } from 'state';", '', 'count$.get() + props.sampled.get()', '3'],
+				] as const) {
+					const fixture = authoredPresentation(
+						'ImportedSnapshot',
+						{ sampled },
+						dev,
+						`${imports}
+export function ImportedSnapshot(props) @{ 'use dom bindings';
+ ${setup}
+ <p>{${expression} as string}</p>
+}`,
+						{ state: { count$, state: { count$ } } },
+					);
+					const host = document.createElement('section');
+					container.append(host);
+					host.innerHTML = fixture.html;
+					const paragraph = host.querySelector('p')!;
+					expect(paragraph.textContent).toBe(expected);
+					const serverText = paragraph.firstChild;
+					expect(() => fixture.attach(paragraph, fixture.state)).toThrow(
+						/imported signal.*handle/i,
+					);
+					expect(paragraph.firstChild).toBe(serverText);
+					expect(paragraph.textContent).toBe(expected);
+					const emptyHost = document.createElement('section');
+					container.append(emptyHost);
+					expect(() => fixture.mount({ parent: emptyHost }, fixture.state)).toThrow(
+						/imported signal.*handle/i,
+					);
+					expect(emptyHost.childNodes).toHaveLength(0);
+					expect(() => fixture.publish({})).not.toThrow();
+					expect(paragraph.firstChild).toBe(serverText);
+					expect(paragraph.textContent).toBe(expected);
+					expect(emptyHost.childNodes).toHaveLength(0);
+				}
+			} finally {
+				scope.dispose();
+			}
+		});
+
+		it(`diagnoses imported signal reads that select binding structure (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `imported-signal-structure-${dev}` });
+			const count$ = scope.signal$('count', 1);
+			const rows$ = scope.signal$('rows', [{ id: 'first', label: 'First' }]);
+			try {
+				for (const [markup, expected] of [
+					['@if (count$.get() > 0) { <span>Shown</span> } @else { <b>Hidden</b> }', 'Shown'],
+					[
+						'@for (const row of rows$.get(); key row.id) { <span>{row.label as string}</span> }',
+						'First',
+					],
+				] as const) {
+					const fixture = authoredPresentation(
+						'ImportedStructure',
+						{},
+						dev,
+						`import { count$, rows$ } from 'state';
+export function ImportedStructure(props) @{ 'use dom bindings'; <section>${markup}</section> }`,
+						{ state: { count$, rows$ } },
+					);
+					const host = document.createElement('section');
+					container.append(host);
+					host.innerHTML = fixture.html;
+					const root = host.firstElementChild!;
+					expect(root.textContent).toBe(expected);
+					expect(() => fixture.attach(root, fixture.state)).toThrow(/imported signal.*handle/i);
+					expect(root.textContent).toBe(expected);
+					const emptyHost = document.createElement('section');
+					container.append(emptyHost);
+					expect(() => fixture.mount({ parent: emptyHost }, fixture.state)).toThrow(
+						/imported signal.*handle/i,
+					);
+					expect(emptyHost.childNodes).toHaveLength(0);
+					expect(() => fixture.publish({})).not.toThrow();
+					expect(root.textContent).toBe(expected);
+					expect(emptyHost.childNodes).toHaveLength(0);
+				}
+			} finally {
+				scope.dispose();
+			}
+		});
+
+		it(`keeps imported signal handles live without replacing server text (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `imported-live-handle-${dev}` });
+			const count$ = scope.signal$('count', 1);
+			const fixture = authoredPresentation(
+				'ImportedHandle',
+				{},
+				dev,
+				`import { count$ } from 'state';
+export function ImportedHandle(props) @{ 'use dom bindings'; <p>{count$ as string}</p> }`,
+				{ state: { count$ } },
+			);
+			const host = document.createElement('section');
+			container.append(host);
+			host.innerHTML = fixture.html;
+			const paragraph = host.querySelector('p')!;
+			const serverText = [...paragraph.childNodes].find((node) => node.nodeValue === '1')!;
+			expect(serverText).toBeDefined();
+			const handle = fixture.attach(paragraph, fixture.state);
+			try {
+				count$.set(7);
+				expect(paragraph.textContent).toBe('7');
+				expect(serverText.nodeValue).toBe('7');
+				expect(serverText.parentNode).toBe(paragraph);
+				handle.dispose();
+				count$.set(9);
+				expect(paragraph.textContent).toBe('7');
+				expect(fixture.cleanup).toHaveBeenCalledOnce();
+			} finally {
+				handle.dispose();
+				scope.dispose();
+			}
+		});
+
+		it(`preserves foreign imported methods and explicit props snapshots (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `foreign-imported-snapshots-${dev}` });
+			const sampled = scope.signal$('sampled', 'sample one');
+			const target = {
+				value: 'foreign one',
+				get() {
+					expect(this).toBe(foreign);
+					return this.value;
+				},
+			};
+			const foreign = new Proxy(target, {
+				get(object, property, receiver) {
+					if (typeof property === 'symbol') throw new Error('Foreign methods reject symbol probes');
+					return Reflect.get(object, property, receiver);
+				},
+			});
+			const fixture = authoredPresentation(
+				'ForeignSnapshots',
+				{ sampled },
+				dev,
+				`import { foreign, missing, state } from 'foreign';
+export function ForeignSnapshots(props) @{ 'use dom bindings';
+ <section>
+  <p>{foreign.get() as string}</p>
+  <p>{(missing?.get?.() ?? 'fallback') as string}</p>
+  <p>{(state?.count$.get() ?? 'missing state') as string}</p>
+  <p>{props.sampled.get() as string}</p>
+ </section>
+}`,
+				{ foreign: { foreign, missing: undefined, state: undefined } },
+			);
+			const host = document.createElement('section');
+			container.append(host);
+			host.innerHTML = fixture.html;
+			const root = host.firstElementChild!;
+			const paragraphs = [...root.querySelectorAll('p')];
+			const handle = fixture.attach(root, fixture.state);
+			try {
+				expect(paragraphs.map((node) => node.textContent)).toEqual([
+					'foreign one',
+					'fallback',
+					'missing state',
+					'sample one',
+				]);
+				target.value = 'foreign two';
+				sampled.set('sample two');
+				expect(paragraphs.map((node) => node.textContent)).toEqual([
+					'foreign one',
+					'fallback',
+					'missing state',
+					'sample one',
+				]);
+				fixture.publish({});
+				expect(paragraphs.map((node) => node.textContent)).toEqual([
+					'foreign two',
+					'fallback',
+					'missing state',
+					'sample two',
+				]);
+				expect([...root.querySelectorAll('p')]).toEqual(paragraphs);
+			} finally {
+				handle.dispose();
+				scope.dispose();
+			}
+		});
+
+		it(`preserves imported reads in subscribed native attribute projections (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `subscribed-imported-projection-${dev}` });
+			const count$ = scope.signal$('count', 1);
+			const height$ = scope.signal$('height', 2);
+			const projectionOptions = {
+				knownAttributeSpreads: [
+					{
+						source: 'binding-styles',
+						imported: '*',
+						members: ['props'],
+						fields: ['className', 'style'],
+						style: 'object',
+						jsxAttribute: 'sx',
+					},
+				],
+			};
+			const modules = {
+				state: { count$ },
+				'binding-styles': {
+					create: (configuration: unknown) => configuration,
+					props: (value: unknown) => value,
+				},
+			};
+			try {
+				for (const callback of [false, true]) {
+					for (const adopt of [false, true]) {
+						count$.set(1);
+						height$.set(2);
+						const source = `import { count$ } from 'state';
+import * as stylex from 'binding-styles';
+const styles = stylex.create({ height: height => ({ className: 'sized', style: {
+ height: ${callback ? 'height + count$.get()' : 'height'}
+} }) });
+export function SubscribedSnapshot(props) @{ 'use dom bindings';
+ <div sx={styles.height(${callback ? 'props.height$' : 'count$.get()'})}><input /></div>
+}`;
+						const fixture = authoredPresentation(
+							'SubscribedSnapshot',
+							{ height$ },
+							dev,
+							source,
+							modules,
+							projectionOptions,
+						);
+						const host = document.createElement('section');
+						container.append(host);
+						host.innerHTML = fixture.html;
+						const serverNode = host.querySelector('div')!;
+						expect(serverNode.style.height).toBe(callback ? '3px' : '1px');
+						if (!adopt) host.replaceChildren();
+						const handle = adopt
+							? fixture.attach(serverNode, fixture.state)
+							: fixture.mount({ parent: host }, fixture.state);
+						try {
+							const node = host.querySelector('div')!;
+							const input = node.querySelector('input')!;
+							if (adopt) expect(node).toBe(serverNode);
+							count$.set(7);
+							expect(node.style.height).toBe(callback ? '9px' : '7px');
+							height$.set(3);
+							expect(node.style.height).toBe(callback ? '10px' : '7px');
+							expect(node.className).toBe('sized');
+							expect(node.querySelector('input')).toBe(input);
+							handle.dispose();
+							count$.set(9);
+							height$.set(4);
+							fixture.publish({});
+							expect(node.style.height).toBe(callback ? '10px' : '7px');
+							expect(fixture.cleanup).toHaveBeenCalledOnce();
+						} finally {
+							handle.dispose();
+						}
+					}
+				}
+				const eager = authoredPresentation(
+					'EagerSnapshot',
+					{ height$ },
+					dev,
+					`import { count$ } from 'state';
+import * as stylex from 'binding-styles';
+const styles = stylex.create({ height: height => ({ className: 'sized', style: { height } }) });
+export function EagerSnapshot(props) @{ 'use dom bindings';
+ const sampled = count$.get();
+ <div sx={styles.height(props.height$ + sampled)} />
+}`,
+					modules,
+					projectionOptions,
+				);
+				const host = document.createElement('section');
+				container.append(host);
+				host.innerHTML = eager.html;
+				const serverNode = host.firstElementChild!;
+				const previous = serverNode.outerHTML;
+				expect(() => eager.attach(serverNode, eager.state)).toThrow(/imported signal.*handle/i);
+				expect(host.firstElementChild).toBe(serverNode);
+				expect(serverNode.outerHTML).toBe(previous);
+				const emptyHost = document.createElement('section');
+				container.append(emptyHost);
+				expect(() => eager.mount({ parent: emptyHost }, eager.state)).toThrow(
+					/imported signal.*handle/i,
+				);
+				expect(emptyHost.childNodes).toHaveLength(0);
+			} finally {
+				scope.dispose();
+			}
+		});
+
+		it(`diagnoses imported reads introduced by a later source publication (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `later-imported-snapshot-${dev}` });
+			const count$ = scope.signal$('count', 1);
+			const state: { current: typeof count$ | undefined } = { current: undefined };
+			try {
+				for (const adopt of [false, true]) {
+					state.current = undefined;
+					const fixture = authoredPresentation(
+						'LaterSnapshot',
+						{ fallback: 'Initial' },
+						dev,
+						`import { state } from 'state';
+export function LaterSnapshot(props) @{ 'use dom bindings';
+ <p>{(state.current?.get() ?? props.fallback) as string}</p>
+}`,
+						{ state: { state } },
+					);
+					const host = document.createElement('section');
+					container.append(host);
+					host.innerHTML = fixture.html;
+					const serverParagraph = host.querySelector('p')!;
+					if (!adopt) host.replaceChildren();
+					const handle = adopt
+						? fixture.attach(serverParagraph, fixture.state)
+						: fixture.mount({ parent: host }, fixture.state);
+					try {
+						const paragraph = host.querySelector('p')!;
+						const text = paragraph.firstChild;
+						if (adopt) expect(paragraph).toBe(serverParagraph);
+						expect(paragraph.textContent).toBe('Initial');
+						state.current = count$;
+						expect(() => fixture.publish({ fallback: 'Rejected' })).toThrow(
+							/imported signal.*handle/i,
+						);
+						count$.set(7);
+						expect(paragraph.textContent).toBe('Initial');
+						expect(paragraph.firstChild).toBe(text);
+						state.current = undefined;
+						expect(() => fixture.publish({ fallback: 'Retired' })).not.toThrow();
+						handle.refresh();
+						expect(paragraph.textContent).toBe('Initial');
+						expect(paragraph.firstChild).toBe(text);
+						handle.dispose();
+						state.current = count$;
+						expect(() => fixture.publish({ fallback: 'Disposed' })).not.toThrow();
+						expect(paragraph.textContent).toBe('Initial');
+						expect(fixture.cleanup).toHaveBeenCalledOnce();
+					} finally {
+						handle.dispose();
+					}
+				}
+			} finally {
+				scope.dispose();
+			}
+		});
+
+		it(`preserves props snapshots in optional foreign method chains (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `foreign-optional-snapshots-${dev}` });
+			const sampled = scope.signal$('sampled', false);
+			const foreign = {
+				value: ['foreign value'],
+				get() {
+					expect(this).toBe(foreign);
+					return this.value;
+				},
+			};
+			try {
+				for (const adopt of [false, true]) {
+					sampled.set(false);
+					const fixture = authoredPresentation(
+						'ForeignChain',
+						{ sampled },
+						dev,
+						`import { foreign } from 'foreign';
+export function ForeignChain(props) @{ 'use dom bindings';
+ <p>{(foreign.get()?.find(() => props.sampled.get()) ?? 'fallback') as string}</p>
+}`,
+						{ foreign: { foreign } },
+					);
+					const host = document.createElement('section');
+					container.append(host);
+					host.innerHTML = fixture.html;
+					const serverParagraph = host.querySelector('p')!;
+					expect(serverParagraph.textContent).toBe('fallback');
+					if (!adopt) host.replaceChildren();
+					const handle = adopt
+						? fixture.attach(serverParagraph, fixture.state)
+						: fixture.mount({ parent: host }, fixture.state);
+					try {
+						const paragraph = host.querySelector('p')!;
+						if (adopt) expect(paragraph).toBe(serverParagraph);
+						sampled.set(true);
+						expect(paragraph.textContent).toBe('fallback');
+						fixture.publish({});
+						expect(paragraph.textContent).toBe('foreign value');
+						sampled.set(false);
+						expect(paragraph.textContent).toBe('foreign value');
+						fixture.publish({});
+						expect(paragraph.textContent).toBe('fallback');
+						expect(host.querySelector('p')).toBe(paragraph);
+					} finally {
+						handle.dispose();
+					}
+				}
+			} finally {
+				scope.dispose();
+			}
+		});
+
+		it(`preserves event samples and committed props captures (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `imported-signal-events-${dev}` });
+			const count$ = scope.signal$('count', 1);
+			try {
+				for (const setup of [false, true]) {
+					for (const adopt of [false, true]) {
+						count$.set(1);
+						const onValue = vi.fn();
+						const fixture = authoredPresentation(
+							'EventSnapshot',
+							{ label: 'Initial', onValue },
+							dev,
+							`import { count$ } from 'state';
+export function EventSnapshot(props) @{ 'use dom bindings';
+ ${setup ? 'const sample = count$.get(); const label = props.label; const onClick = () => props.onValue(sample, label);' : ''}
+ <button type="button" onClick={${setup ? 'onClick' : '() => props.onValue(count$.get(), props.label)'}}>{props.label as string}</button>
+}`,
+							{ state: { count$ } },
+						);
+						const host = document.createElement('section');
+						container.append(host);
+						host.innerHTML = fixture.html;
+						const serverButton = host.querySelector('button')!;
+						if (!adopt) host.replaceChildren();
+						const handle = adopt
+							? fixture.attach(serverButton, fixture.state)
+							: fixture.mount({ parent: host }, fixture.state);
+						try {
+							const button = host.querySelector('button')!;
+							if (adopt) expect(button).toBe(serverButton);
+							count$.set(7);
+							button.click();
+							expect(onValue.mock.calls).toEqual([[7, 'Initial']]);
+							// Native samples advance at delivery; props stay with the committed snapshot.
+							fixture.publish({ label: 'Unpublished' }, false);
+							count$.set(8);
+							button.click();
+							expect(onValue.mock.calls).toEqual([
+								[7, 'Initial'],
+								[8, 'Initial'],
+							]);
+							expect(button.textContent).toBe('Initial');
+							fixture.publish({ label: 'Updated' });
+							button.click();
+							count$.set(9);
+							button.click();
+							expect(onValue.mock.calls).toEqual([
+								[7, 'Initial'],
+								[8, 'Initial'],
+								[8, 'Updated'],
+								[9, 'Updated'],
+							]);
+							expect(button.textContent).toBe('Updated');
+							expect(host.querySelector('button')).toBe(button);
+							handle.dispose();
+							button.click();
+							expect(onValue).toHaveBeenCalledTimes(4);
+						} finally {
+							handle.dispose();
+						}
+					}
+				}
+			} finally {
+				scope.dispose();
+			}
+		});
+
+		it(`diagnoses imported signal snapshots after fixed prop specialization (${dev ? 'dev' : 'prod'})`, () => {
+			const scope = createScope({ scopeKey: `imported-fixed-signal-snapshots-${dev}` });
+			const count$ = scope.signal$('count', 1);
+			try {
+				for (const child of [false, true]) {
+					const fixture = authoredPresentation(
+						'FixedSnapshot',
+						{ name: 'count$' },
+						dev,
+						`import { state } from 'state';
+${child ? 'function SignalRead(props) @{ <p>{state[props.name].get() as string}</p> }' : ''}
+export function FixedSnapshot(props) @{ 'use dom bindings';
+ ${child ? '<section><SignalRead name="count$" /></section>' : '<p>{state[props.name].get() as string}</p>'}
+}`,
+						{ state: { state: { count$ } } },
+						child ? { domBindingFixedProps: ['name'] } : {},
+						child ? undefined : ['name'],
+						child ? undefined : [['name', 'count$']],
+					);
+					const host = document.createElement('section');
+					container.append(host);
+					host.innerHTML = fixture.html;
+					const root = host.firstElementChild!;
+					expect(root.textContent).toBe('1');
+					expect(() => fixture.attach(root, fixture.state)).toThrow(/imported signal.*handle/i);
+					expect(root.textContent).toBe('1');
+					const emptyHost = document.createElement('section');
+					container.append(emptyHost);
+					expect(() => fixture.mount({ parent: emptyHost }, fixture.state)).toThrow(
+						/imported signal.*handle/i,
+					);
+					expect(emptyHost.childNodes).toHaveLength(0);
+				}
+			} finally {
+				scope.dispose();
+			}
+		});
+
+		it(`diagnoses unsupported latest snapshots while compiling binding views (${dev ? 'dev' : 'prod'})`, () => {
+			for (const mode of ['client', 'server'] as const) {
+				let diagnostic: unknown;
+				try {
+					loadCompiledFixtureSource(
+						`import { count$ } from 'state';
+export function LatestSnapshot(props) @{ 'use dom bindings'; <p>{count$.latest('fallback') as string}</p> }`,
+						{
+							id:
+								'/src/latest-snapshot.tsrx' +
+								(mode === 'client' ? '?octane-bindings=LatestSnapshot' : ''),
+							mode,
+							compileOptions: { dev, hmr: false },
+						},
+					);
+				} catch (error) {
+					diagnostic = error;
+				}
+				expect(diagnostic).toMatchObject({
+					code: 'OCTANE_DOM_BINDINGS',
+					message: expect.stringMatching(/calls in bindings must be imported pure projections/),
+				});
+			}
 		});
 
 		it(`preserves signal text ownership and replacement (${dev ? 'dev' : 'prod'})`, () => {

@@ -1,6 +1,6 @@
 # Signals
 
-`octane/signals` is Octane's stable, renderer-independent API for writable state, derived values, keyed async sources, and streams. `signal$`, `derived$`, and `query$` are declaration facades: the compiler assigns their stable source identities, while the current request, document or feature instance owns their cells. Compiled browser modules can read and write global signals without creating a renderer root. Server reads/writes require a request owner; there is no mutable process-global fallback. Native component reads and `useSignal$` work with the standard Octane compiler; no signal-specific compiler option is needed. Each module that consumes native reads needs a runtime import from `octane/signals`, `octane/signals/client`, or `octane/signals/server`, including modules that receive handles through props or call imported helpers. A `$` name alone does not enable native reads.
+`octane/signals` is Octane's stable, renderer-independent API for writable state, derived values, keyed async sources, and streams. `signal$`, `derived$`, and `query$` are declaration facades: the compiler assigns their stable source identities, while the current request, document or feature instance owns their cells. Compiled browser modules can read and write global signals without creating a renderer root. Server reads/writes require a request owner; there is no mutable process-global fallback. Native component reads and `useSignal$` work with the standard Octane compiler; no signal-specific compiler option is needed. Each module that consumes native reads needs a runtime import from `octane/signals`, `octane/signals/client`, or `octane/signals/server`, including modules that receive handles through props or call imported helpers. A `$` name alone does not enable native reads, and neither does importing handles from a module that declares them: a `.ts` or `.tsrx` module that only declares signals stays renderer-free.
 
 The [website guide](https://octanejs.dev/docs/signals) introduces the API, including a [complete streaming SSR example](https://octanejs.dev/docs/signals#streaming-example) and its [performance benefits](https://octanejs.dev/docs/signals#streaming-performance). This reference describes ownership, availability, and hydration in more detail. The [original implementation evidence](experimental-scoped-signals-evidence.md) and [implementation plan](plans/2026-08-27-experimental-scoped-async-signals-plan.md) are historical records.
 
@@ -367,6 +367,89 @@ The engine also exposes `scope.serialize()` and `scope.beginAdoption(seed)` for 
 A serialized seed is an explicit copy of data, not a live cross-owner reference. Its decoded historical values belong to the adopting owner and its frame leases. The wire format does not transport another process's live ownership identities; retiring an original owner does not retroactively erase a seed that was already copied.
 
 Pending producers and error objects are not transported. Native pending/catch arms that cannot be seeded are marked for fresh rendering within their owned hydration range. An unexpected missing native channel triggers hydration recovery rather than becoming an application error or silently combining historical and live reads. Completed output that directly samples a pending/error snapshot, or converts pending demand into an `isPending` result, is unsupported by the ready-state transport and receives a diagnostic. Use a pending boundary or a serializable `latest` projection instead.
+
+### Share the initial document history
+
+A custom host can emit one initial document `ScopeSeed`, then supply that seed as
+`initialDocumentSignals` to both the server renderer and `hydrateRoot`. The
+renderer snapshots it once per request. The client snapshots it once per root,
+and deferred `<Hydrate>` boundaries and streamed Suspense arms borrow that
+immutable history when they activate.
+
+```ts
+import { renderToString } from 'octane/server';
+import { createScope, runWithSignalOwner } from 'octane/signals';
+import { App, route$ } from './view.tsrx';
+
+const request = createScope({ scopeKey: 'octane:document' });
+runWithSignalOwner(request, () => route$.set('thread'));
+const initialDocumentSignals = request.serialize();
+const rendered = renderToString(App, {}, {
+  signalOwner: request,
+  initialDocumentSignals,
+});
+// Emit initialDocumentSignals once in the host's early document bootstrap,
+// before rendered.html. Escape bootstrap JSON for its HTML/script context.
+```
+
+`route$` is a compiled module declaration such as `signal$('home')`. Each
+matching native manifest references the seed's exact signal key and read
+channel. Matching includes the complete encoded entry, including query identity
+and readiness metadata; equal displayed text alone is insufficient. A read that
+differs from the initial seed keeps its own entry. A manifest contains only the
+historical reads its own HTML needs, so an unrelated initial entry does not
+silently become available during that boundary's adoption.
+
+For a host using the streamed-result bridge, initialize the live document once
+from that original seed before importing consumers:
+
+```ts
+import { hydrateRoot } from 'octane';
+import { bootstrapStreamedSignalResults } from 'octane/hydration/streamed-signals';
+
+// The host installed the parser-time signal/selection bootstrap earlier.
+const page = bootstrapStreamedSignalResults({
+  buildId,
+  documentId,
+  initialSignals: { version: 1, scopes: [initialDocumentSignals] },
+});
+const { App } = await import('./view.tsrx');
+const root = hydrateRoot(container, App, {}, {
+  signalOwner: page.signalOwner,
+  initialDocumentSignals,
+});
+```
+
+`initialDocumentSignals` must retain the original response's seed, with the same
+build, document and owner authority on both sides. Do not replace it with a
+snapshot of later live state. The seed's scope key must match `signalOwner`'s
+document owner; omitted owners use `octane:document`. Hydration history does not
+initialize the live owner. An existing write before activation remains live:
+the boundary first adopts its server value through accepted refs and layout
+work, then reconciles with current state after commit. Later streamed results
+continue through the existing owner and do not reinstall this seed.
+
+Pass `initialDocumentSignals` and the same `signalOwner` to
+`bootstrapIndependentHydration` or `registerIndependentHydrationIsland` for
+parent-free boundaries. Registration captures the seed before delayed module
+loading, and activation forwards it to its own hydration root. Root unmount
+releases the root's retained history without retiring the borrowed data owner.
+
+Without this option, native transport remains the existing version 1 manifest.
+When at least one entry matches, the renderer emits a version 2
+`NativeSignalManifest`: `scopes` carries distinct entries and `initialDocument`
+carries `{ scopeKey, entries: [{ key, read }] }` references. Missing seeds,
+unresolved references, duplicate references and overlapping reference/entry
+history are rejected. The host's early bootstrap always carries the full
+version 1 seed; a compact rendered manifest is not a document initialization
+seed.
+
+`createStreamedRegionPlacementFrame` packages a standalone historical frame.
+If its render used compact history, also provide `initialDocumentSignals` in
+its placement options so the helper can materialize the exact full history
+required by that protocol. Standalone placement frames still transport their
+own historical values. Their HTML keeps its compact native sidecars, so pass
+the original seed again when hydrating the placed content.
 
 ## Inspection and current limits
 

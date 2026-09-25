@@ -1,9 +1,5 @@
 // Mirrors the "Menus and toolbars" recipe in packages/blocknote/README.md.
-import {
-	SuggestionMenu,
-	filterSuggestionItems,
-	getDefaultSlashMenuItems,
-} from '@blocknote/core';
+import { SuggestionMenu, filterSuggestionItems, getDefaultSlashMenuItems } from '@blocknote/core';
 import { useBlockNoteEditor } from '@octanejs/blocknote';
 import { useEffect, useSyncExternalStore } from 'octane';
 
@@ -17,9 +13,8 @@ export function SlashMenu() @{
 	}, [menu]);
 
 	const state = useSyncExternalStore(menu.store.subscribe, () => menu.store.state);
-	const items = state?.show
-		? filterSuggestionItems(getDefaultSlashMenuItems(editor), state.query)
-		: [];
+	const items =
+		state?.show ? filterSuggestionItems(getDefaultSlashMenuItems(editor), state.query) : [];
 
 	@if (state?.show) {
 		<ul
@@ -34,9 +29,7 @@ export function SlashMenu() @{
 						menu.closeMenu();
 						item.onItemClick();
 					}}
-				>
-					{item.title}
-				</li>
+				>{item.title}</li>
 			}
 		</ul>
 	}

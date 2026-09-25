@@ -236,6 +236,8 @@ import {
 import { beginNativeEventBatch, endNativeEventBatch } from './signals/native-read-events.js';
 import {
 	createNativeAdoptionState,
+	captureInitialDocumentSignals,
+	materializeNativeSignalManifest,
 	NATIVE_SIGNAL_SEED_ATTR,
 	NATIVE_SIGNAL_FRESH_COMMENT,
 	parseNativeSignalManifest,
@@ -271,6 +273,7 @@ import {
 	SIGNAL_HANDLE,
 	type SignalHandle,
 	type SignalOwner,
+	type ScopeSeed,
 	type SignalOwnerIdentity,
 	type SignalRendererOwnerIdentity,
 	type WritableSignal,
@@ -1536,7 +1539,10 @@ function ownNativeAdoption(
 	manifest: NativeSignalManifest,
 	consume?: () => void,
 ): NativeAdoptionState {
-	const adoption = createNativeAdoptionState(manifest);
+	const adoption = createNativeAdoptionState(
+		manifest,
+		scope.block.idState.renderOwner?.initialDocumentSignals,
+	);
 	registerHookCleanup(scope, () => {
 		adoption.release();
 		if (!ROOT_RENDER_ROLLBACK || scope.block.idState.renderOwner?.disposed) consume?.();
@@ -3504,6 +3510,8 @@ interface RootRenderOwner {
 	current: Block | null;
 	/** Shared document/account data owner; distinct from this root's presentation owner. */
 	signalOwner?: SignalOwner;
+	/** Immutable initial-response history, borrowed by deferred and streamed adoptions. */
+	initialDocumentSignals?: ScopeSeed;
 	bindingLeases?: Set<BindingHandoff>;
 	controlLeases?: Map<Element, ControlHandoff | undefined>;
 	preservePresentation?: boolean;
@@ -10547,7 +10555,14 @@ export function renderBlock(block: Block): void {
 		}
 	}
 	const hydration = activeHydration();
-	if (hydration !== null && !hydration.owns(block)) {
+	// A replacement dynamic range owns client DOM even while its parent adopts
+	// server siblings. Fresh control-flow markers can instead be replay scaffolding
+	// whose body must still read the server rejection seed before adopting a catch.
+	if (
+		hydration !== null &&
+		(!hydration.owns(block) ||
+			(block.kind === 'dynamic' && block.endMarker !== null && hydration.isFresh(block.endMarker)))
+	) {
 		hydration.suspend(() => renderBlock(block));
 		return;
 	}
@@ -11418,6 +11433,25 @@ export function componentSlotLite<P>(
 		return;
 	}
 	const hydration = activeHydration();
+	// Fresh anchors belong to a client-built replacement, while the enclosing
+	// hydration cursor still owns later server siblings. Match the general
+	// component path by suspending adoption only for this subtree.
+	if (
+		hydration !== null &&
+		((anchor != null && hydration.isFresh(anchor)) || hydration.isFresh(host))
+	) {
+		suspendFreshLiteComponent(
+			hydration,
+			parentScope,
+			slotKey,
+			host,
+			comp,
+			props,
+			anchor,
+			invocationSite,
+		);
+		return;
+	}
 	let scope = parentScope.slots[slotKey] as Scope | undefined;
 	// The server `<!--]-->` this call adopted as its range end (hydration first
 	// render only) — consumed by the post-body cursor advance below.
@@ -11517,6 +11551,22 @@ export function componentSlotLite<P>(
 	// its commitBag insert MOVES the previous sibling's root to the shared
 	// anchor. Mirrors componentSlot's post-render advance.
 	if (hydration !== null && adoptedClose !== null) hydration.node = getNextSibling(adoptedClose);
+}
+
+// Keep the fresh-subtree callback's extra captures out of ordinary lite dispatch.
+function suspendFreshLiteComponent<P>(
+	hydration: HydrationCapability,
+	parentScope: Scope,
+	slotKey: number,
+	host: Node,
+	comp: ComponentBody<P>,
+	props: P,
+	anchor?: Node,
+	invocationSite?: string,
+): void {
+	hydration.suspend(() =>
+		componentSlotLite(parentScope, slotKey, host, comp, props, anchor, invocationSite),
+	);
 }
 
 // ── Teardown error routing (React's captureCommitPhaseError for deletions) ──
@@ -18662,6 +18712,27 @@ class HydrationCapability {
 		const framedRemainder =
 			claimsRoot && cursor !== null ? this.framedRootRemainder(cursor) : undefined;
 		const unframedRemainder = claimsRoot && cursor !== null ? getNextSibling(cursor) : undefined;
+		// A closing marker bounds an empty server range; it cannot be the first
+		// child of a newly populated fragment. Build fresh descendants without
+		// consuming that boundary, so its owner can advance the outer cursor.
+		if (isFragment && isBlockClose(cursor)) {
+			if (PRESENTATION_HYDRATION?.revision !== undefined) presentationMiss();
+			if (claimsRoot)
+				this.claimRootRemainder(
+					framedRemainder === undefined ? (unframedRemainder ?? null) : framedRemainder,
+				);
+			if (template === null) template = resolveLazyTemplate(lazy!);
+			if (!this.staleServerValues) {
+				noteRecoverableHydrationError(() => new Error(formatClientError(51)));
+				if (process.env.NODE_ENV !== 'production')
+					warnHydrationStructuralMismatch(
+						loc ?? componentSourceLoc(CURRENT_BLOCK?.body) ?? CURRENT_SCOPE?.locFile,
+						'a non-empty fragment',
+						describeHydrationNode(cursor),
+					);
+			}
+			return this.freshClone(template);
+		}
 		// A synthetic fragment wrapper has no server counterpart. At a root, compare
 		// its logical static roots before returning the virtual adoption view; otherwise
 		// arbitrary server markup could be mistaken for every fragment child at once.
@@ -43655,6 +43726,12 @@ export interface RootOptions {
 	 */
 	signalOwner?: SignalOwner;
 	/**
+	 * Hydration only: the initial document seed also supplied to the server renderer.
+	 * Snapshotted once; referenced boundary reads adopt it without initializing or
+	 * rewinding live state. Deferred/streamed boundaries borrow the root's snapshot.
+	 */
+	initialDocumentSignals?: ScopeSeed;
+	/**
 	 * Caller-controlled useId prefix. createRoot composes it with an automatic
 	 * client-root namespace; hydrateRoot uses it verbatim to match server output.
 	 */
@@ -44566,6 +44643,7 @@ function makeRoot(
 				renderOwner.current = null;
 				renderOwner.retry = noop;
 				renderOwner.adopt = undefined;
+				renderOwner.initialDocumentSignals = undefined;
 				renderOwner.retryKey = null;
 				renderOwner.transaction = null;
 				unregisterDelegationTarget(container, true);
@@ -44763,12 +44841,26 @@ function hydrateRootWithOutputHandler(
 		new Set(controlLeases.map((lease) => lease.control)).size !== controlLeases.length
 	)
 		throw new Error(formatClientError(78));
+	const signalOwner =
+		rootOptions?.signalOwner ??
+		(signalDocumentEnabled ? documentSignalOwner(container) : undefined);
+	const initialDocumentSignals =
+		rootOptions?.initialDocumentSignals === undefined
+			? undefined
+			: captureInitialDocumentSignals(
+					rootOptions.initialDocumentSignals,
+					((signalOwner as SignalRendererOwnerIdentity | undefined)?.documentOwner ?? signalOwner)
+						?.scopeKey ?? 'octane:document',
+				);
 	const nativeSidecar = findHydrateSeedSidecar(container, NATIVE_SIGNAL_SEED_ATTR);
 	const nativeManifest =
 		nativeSidecar === null
 			? undefined
-			: parseNativeSignalManifest(
-					(STAGED_DOM?.view(nativeSidecar) ?? nativeSidecar).textContent || '',
+			: materializeNativeSignalManifest(
+					parseNativeSignalManifest(
+						(STAGED_DOM?.view(nativeSidecar) ?? nativeSidecar).textContent || '',
+					),
+					initialDocumentSignals,
 				);
 	(STAGED_DOM?.view(nativeSidecar) ?? nativeSidecar)?.remove();
 	const ownerToken = claimRootContainer(container);
@@ -44834,11 +44926,18 @@ function hydrateRootWithOutputHandler(
 		idState,
 		outputHandler,
 		ownerToken,
-		rootOptions?.signalOwner ??
-			(signalDocumentEnabled ? documentSignalOwner(container) : undefined),
-		rootOptions,
+		signalOwner,
+		// Retained public render handles need callbacks, not a second seed alias.
+		initialDocumentSignals === undefined
+			? rootOptions
+			: {
+					onCaughtError: rootOptions?.onCaughtError,
+					onUncaughtError: rootOptions?.onUncaughtError,
+					onRecoverableError: rootOptions?.onRecoverableError,
+				},
 	);
 	const owner = idState.renderOwner!;
+	if (initialDocumentSignals !== undefined) owner.initialDocumentSignals = initialDocumentSignals;
 	if (controlLeases !== undefined) {
 		owner.controlLeases = new Map(controlLeases.map((lease) => [lease.control, lease]));
 		for (const lease of controlLeases) lease.owner = owner;
@@ -45003,7 +45102,7 @@ export function createIndependentHydrateActivator(
 	body: ComponentBody,
 ): IndependentHydrateActivator {
 	return (context: IndependentHydrateActivationContext) => {
-		const { captures, element, manifest, signalOwner } = context;
+		const { captures, element, manifest, signalOwner, initialDocumentSignals } = context;
 		let intents: readonly HydrationReplayIntent[] | null =
 			context.intents.length === 0 ? null : context.intents;
 		const notify =
@@ -45035,6 +45134,7 @@ export function createIndependentHydrateActivator(
 						const replays = intents;
 						intents = null;
 						for (const replay of replays) {
+							if (replay.earlyBinding) continue;
 							// A preceding replay may have changed this control's selection meaning.
 							if (!isHydrationSelectionIntentCurrent(replay)) continue;
 							const originalTarget = replay.event.target;
@@ -45073,6 +45173,7 @@ export function createIndependentHydrateActivator(
 			identifierSeed: manifest.idSeed,
 			signalInstancePrefix: manifest.boundaryId,
 			...(signalOwner === undefined ? {} : { signalOwner }),
+			...(initialDocumentSignals === undefined ? {} : { initialDocumentSignals }),
 		});
 		if (notify !== null) {
 			const unmount = root.unmount;

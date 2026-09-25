@@ -88,7 +88,8 @@ afterEach(async () => {
 
 const blockTypes = () =>
 	page.evaluate(() =>
-		(window as unknown as HarnessWindow).editor.document.map((block) => block.type));
+		(window as unknown as HarnessWindow).editor.document.map((block) => block.type),
+	);
 
 it('accepts typed text in the mounted editor', async () => {
 	await caretAtEndOf(0);

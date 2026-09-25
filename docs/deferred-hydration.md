@@ -506,6 +506,29 @@ helpers must be pure; pass live values through the source snapshot rather than
 reading ambient state inside a projection. Snapshots must be synchronous values,
 never promises or other thenables.
 
+Pass an imported signal handle directly to a supported binding, for example
+`<span>{count$ as number}</span>`, to keep its subscription. Sampling it with
+`count$.get()` would produce a value that has no `BindingSource` notification.
+Selected binding artifacts diagnose actual native reads in eager imported `.get()`
+calls during activation or source publication, including computed/optional calls
+and pure setup aliases with an imported receiver. The check observes the canonical
+native-read protocol;
+ordinary imported `.get()` methods remain pure projections and are not subscribed.
+Normal SSR reads remain valid. A deliberate sample should enter through the source
+snapshot: `props.count.get()` continues to update only when that source publishes.
+Receiver aliases mixing props and imports, receiver expressions containing props
+samples, and optional chains combining imported reads with props samples retain
+their conservative sampling behavior; use direct handles or explicit source
+snapshots until subscribed projection lowering supports
+those shapes. Direct `.latest(fallback)` calls remain unsupported compiler
+diagnostics rather than implicitly subscribed reads.
+
+Known native attribute projections already own their read subscriptions and keep
+that behavior, including imported `.get()` reads inside the computation. Setup
+values sampled before that computation still need a direct handle or an explicit
+source snapshot. Deferred provider configuration callbacks retain their provider
+contract; their opaque invocation is outside this eager-accessor diagnostic.
+
 Pure projections also accept the canonical `isSignalHandle` import from `octane/signals` and unshadowed `String` and `Math.min` calls. Local `const` event and ref callbacks may be named or aliased in setup; their bodies execute as native adapters, not while preparing presentation values. They cannot be used as eager projections. Named refs preserve dependency-based attachment, but a ref that captures another local callback is unsupported. An explicit component `ref` may forward a ref supplied through props; this does not authorize arbitrary component-prop spreads.
 
 Compiler-proven presentation supports native HTML/SVG, text, native events and
@@ -648,7 +671,7 @@ bound textarea controls and deferred children keep their own ownership. Other
 host properties can remain outside this lease through `unbound`.
 
 This parent-only proof currently requires a named `props` parameter and no local
-setup declarations. Inline pure expressions, signal `.get()` reads, and imported
+setup declarations. Inline pure expressions, props-based signal `.get()` samples, and imported
 pure projections retain that scalar shape. Destructured parameters or local
 `const` declarations select the general binding program, which supports those
 forms but cannot transfer a parent with opaque children. This is a handoff
@@ -777,6 +800,109 @@ The capture registration must be running before these commands are offered. It
 cannot reconstruct commands captured earlier by the default inline bootstrap.
 Neither this hook nor deferred delivery restores transient activation; cancellation
 such as `preventDefault()` must happen in the actual early capture handler.
+
+#### Native submissions before the client module loads
+
+An envelope-owning SSR host can opt into native submit capture before ESM
+registration. Emit this script in the document head, before exposing forms:
+
+```ts
+import { earlySignalBootstrapScript } from 'octane/server';
+
+const bootstrap = earlySignalBootstrapScript({
+	nonce,
+	independentHydration: true,
+	formSubmissions: true,
+});
+```
+
+Pass `earlySignalBootstrap: 'external'` to the fragment renderers. Mark each
+participating form with the exact identity of its behavior owner:
+
+```tsx
+<form data-octane-capture-submit="save" action="/save" method="post">
+	<input name="draft" defaultValue="Server draft" />
+	<button name="command" value="save" type="submit">
+		Save
+	</button>
+</form>
+```
+
+The parser listener synchronously cancels eligible, cancelable native `submit`
+events. Button activation still runs browser validation and produces its real
+submit event; implicit Enter and `form.requestSubmit()` use the same path.
+Submit-button clicks are not queued for hydration replay. Forms without this
+marker retain their existing native and hydration behavior.
+
+Enable the client bridge when attaching the behavior root. It connects accepted
+commands to behavior delivery and independent activation. The factory keeps
+form routing out of behavior bundles that do not import it:
+
+```ts
+import { attachBehaviorRoot, captureFormSubmissions } from 'octane/behavior';
+
+const root = attachBehaviorRoot(container, {
+	formSubmissions: captureFormSubmissions(),
+});
+```
+
+Register the owner with the matching `id`, an exact form target or matching form
+selector, `events: ['submit']`, and `captureEvent`. The closest attached behavior
+root reserves the form's command scope, even while its behavior is still absent.
+Each consuming root must enable the bridge; an enclosing root cannot claim a
+command reserved by a nested root:
+
+```ts
+root.registerBehavior({
+	id: 'save',
+	target: form,
+	events: ['submit'],
+	ready: import('./save-behavior'),
+	captureEvent(event, element, submission) {
+		event.preventDefault();
+		const fields =
+			submission?.fields ??
+			Array.from(new FormData(element as HTMLFormElement, (event as SubmitEvent).submitter));
+		return Object.freeze({ text: String(fields.find(([name]) => name === 'draft')?.[1] ?? '') });
+	},
+	adopt() {},
+	handleEvent(_event, _element, _context, payload) {
+		save(payload);
+	},
+});
+```
+
+The optional third capture argument is `CapturedFormSubmission`, exported from
+`octane` and `octane/behavior`. Its frozen `fields` array contains frozen
+`[name, string | File]` pairs from `FormData(form, submitter)`, including duplicate
+names, successful controls outside the form, selected options, checked controls,
+files, and the named submitter. Files have immutable contents. The frozen `form`
+object records `id`, resolved `action`, `method`, `enctype`, `target`, and
+`noValidate` at acceptance. The frozen `submitter` object records `id`, `name`,
+`value`, `type`, raw `formAction`, `formMethod`, `formEnctype`, `formTarget`
+override attributes (or `null`), and `formNoValidate`; it is `null` for submissions
+without a submitter. Image submitters use FormData's default coordinate fields
+(`0`, `0`), rather than coordinates inferred from a prior click.
+
+Capture receives the original native event once, before behavior readiness or
+adoption can change controls. Its returned payload then follows the existing
+FIFO, external-range ownership, and disposal rules. Later edits do not change
+the accepted snapshot. Moving, removing, or repurposing the form invalidates
+undelivered commands. An independent interaction boundary can activate from the
+submission separately from its behavior owner; activation never redispatches
+the accepted submit event.
+
+Before an owner claims a command, a form has a 30-second lease beginning with its
+first pending submission. Repeated submissions do not extend it. Expiry drops
+that form's unclaimed commands and permits future native submissions. The
+document accepts at most 256 pending commands; overflow drops them and disables
+parser submit capture for that document. Page exit, root disposal, owner failure,
+and registration disposal release their pending custody. Already accepted
+commands are never automatically resubmitted. Once the behavior claims a command,
+its readiness and abort lifetime replace the parser lease. Eager ordinary
+registrations keep their native `captureEvent` contract; they receive no third
+argument unless parser submit capture accepted the event. `form.submit()` emits
+no submit event and remains outside this API.
 
 Root identity is scoped to its document and container. A second root for the
 same live container requires `{ replace: true }`, which disposes the old root

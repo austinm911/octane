@@ -31,6 +31,7 @@ import {
 import { mount } from './_helpers.js';
 import { UniversalBoundaryFixture, UniversalTheme } from './_fixtures/universal-boundary.tsrx';
 import { CompiledUniversalScene } from './_fixtures/compiled-universal.object.tsrx';
+import { UniversalPropScene } from './_fixtures/universal-jsx-prop.object.tsrx';
 import { inspectProfileOutput } from './_profile-output.js';
 
 const renderer = {
@@ -2213,6 +2214,50 @@ export function Scene() @{ <><Shared0 /><Native><Shared0 /></Native></> }
 		root.unmount();
 	});
 
+	it('renders unkeyed host loops keyed by position', () => {
+		const source = `
+			export function Scene({items}) @{
+				@for (const item of items) {
+					<node name={item.name} />
+				}
+			}
+		`;
+		let output = compile(source, '/src/UnkeyedList.object.tsrx', {
+			renderer,
+			hmr: false,
+		}).code;
+		expect(output).toMatch(/__octaneUniversalFor\(\s*items/);
+		output = output.replace(
+			/import\s*\{([^}]*)\}\s*from\s*["']octane\/universal["'];/g,
+			(_match, specifiers: string) =>
+				`const {${specifiers.replace(/\s+as\s+/g, ': ')}} = __universal;`,
+		);
+		output = output.replace('export const Scene =', 'const Scene =');
+		const UnkeyedList = new Function('__universal', `${output}\nreturn Scene;`)(
+			UniversalRuntime,
+		) as (props: unknown) => unknown;
+		const { container, root } = objectRoot(true);
+
+		root.render(UnkeyedList as any, { items: [{ name: 'A' }, { name: 'B' }] });
+		const a = container.children[0];
+		const b = container.children[1];
+		expect(container.children.map((child) => child.props.name)).toEqual(['A', 'B']);
+
+		// Positional keys: a reorder re-props the records in place rather than
+		// moving host identity with the item.
+		root.render(UnkeyedList as any, { items: [{ name: 'B' }, { name: 'A' }] });
+		expect(container.children).toEqual([a, b]);
+		expect(container.children.map((child) => child.props.name)).toEqual(['B', 'A']);
+
+		root.render(UnkeyedList as any, { items: [{ name: 'C' }] });
+		expect(container.children).toEqual([a]);
+		expect(container.children[0].props.name).toBe('C');
+
+		root.render(UnkeyedList as any, { items: [] });
+		expect(container.children).toEqual([]);
+		root.unmount();
+	});
+
 	it('preserves keyed state reached through data property getters', () => {
 		const source = `
 			export function Scene({items}) @{
@@ -2876,6 +2921,74 @@ export function Scene() @{ <><Shared0 /><Native><Shared0 /></Native></> }
 		expect(output).toContain('(item, __octaneUniversalIndex) => item.id');
 		expect(output).not.toContain('"key":');
 	});
+
+	it.each([
+		['a', 'a'],
+		['b', 'b'],
+		['c', 'c'],
+		['z', 'fallback'],
+	] as const)('renders the %s arm of an @if/@else if/@else chain', (mode, expected) => {
+		// An `@else if` arm parses to an IfStatement alternate, not a
+		// JSXIfExpression. The else thunk must return the chained universalIf
+		// value; dropping it renders an empty range for every arm but the first.
+		const source = `
+			export function Scene({mode}) @{
+				<scene>
+					@if (mode === 'a') { <leaf value="a" /> }
+					@else if (mode === 'b') { <leaf value="b" /> }
+					@else if (mode === 'c') { <leaf value="c" /> }
+					@else { <leaf value="fallback" /> }
+				</scene>
+			}
+		`;
+		const module = evaluateUniversalHmrModule(
+			compile(source, '/src/ElseIf.object.tsrx', { renderer, hmr: false }).code,
+			{ data: {}, dispose() {}, accept() {}, invalidate() {} },
+		);
+		const { root, container } = objectRoot();
+		try {
+			root.render(module.Scene, { mode });
+			expect(container.children[0].children.map((child) => child.props.value)).toEqual([expected]);
+		} finally {
+			root.unmount();
+		}
+	});
+
+	it.each([
+		['x', 'p', 'x'],
+		['y', 'p', 'y-p'],
+		['y', 'q', 'y-q'],
+		['y', 'z', null],
+		['w', 'p', 'fallback'],
+	] as const)(
+		'renders the %s/%s arm of an @else if chain nested in an @else if arm',
+		(outer, inner, expected) => {
+			const source = `
+				export function Scene({outer, inner}) @{
+					<scene>
+						@if (outer === 'x') { <leaf value="x" /> }
+						@else if (outer === 'y') {
+							@if (inner === 'p') { <leaf value="y-p" /> }
+							@else if (inner === 'q') { <leaf value="y-q" /> }
+						}
+						@else { <leaf value="fallback" /> }
+					</scene>
+				}
+			`;
+			const module = evaluateUniversalHmrModule(
+				compile(source, '/src/NestedElseIf.object.tsrx', { renderer, hmr: false }).code,
+				{ data: {}, dispose() {}, accept() {}, invalidate() {} },
+			);
+			const { root, container } = objectRoot();
+			try {
+				root.render(module.Scene, { outer, inner });
+				const values = container.children[0].children.map((child) => child.props.value);
+				expect(values).toEqual(expected === null ? [] : [expected]);
+			} finally {
+				root.unmount();
+			}
+		},
+	);
 
 	it('keeps HMR, profiling, and parallel-use planning on universal components', () => {
 		const source = `
@@ -3772,6 +3885,23 @@ export function App() @{
 				{ renderer },
 			),
 		).toThrow(/Activity requires an explicit renderer visibility capability/);
+	});
+
+	it('renders JSX passed as a component prop through the object driver', () => {
+		// `card={<UniversalPropCard/>}` is a renderable value in the universal
+		// model, not a DOM descriptor: the universal module exports no
+		// `createScopedValue`/`createElementFromConfig`, so a bundle-time import
+		// of the descriptor runtime is the reported failure. The hole in
+		// UniversalPropHost must mount the same content the callee authored.
+		const { container, root } = objectRoot();
+
+		root.render(UniversalPropScene, { title: 'first' });
+		expect(container.children[0]).toMatchObject({ type: 'frame' });
+		expect(container.children[0].children[0]).toMatchObject({ type: 'label' });
+		expect(container.children[0].children[0].children[0].props.value).toBe('first');
+
+		root.render(UniversalPropScene, { title: 'second' });
+		expect(container.children[0].children[0].children[0].props.value).toBe('second');
 	});
 
 	it('executes a compiler-produced static plan through the object driver', () => {
