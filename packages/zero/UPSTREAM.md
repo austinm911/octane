@@ -5,11 +5,11 @@
 | Field | Value |
 |---|---|
 | Package | `@rocicorp/zero` |
-| Version | `1.8.0` |
+| Version | `1.11.0` |
 | Repository | `https://github.com/rocicorp/mono.git` |
-| Canonical tag | `zero/v1.8.0` |
-| Canonical commit | `cdc02598f137ab4e071878f5674fdc716dbbc69d` |
-| Supported upstream range | exactly `1.8.0` |
+| Canonical tag | `zero/v1.11.0` |
+| Canonical commit | `c9d0e35a2e45b404291c63c89382b267520f9367` |
+| Supported upstream range | exactly `1.11.0` |
 | React oracle | `react@19.2.6`, as pinned by `zero-react` |
 | License | Apache-2.0, Rocicorp, Inc. |
 
@@ -47,7 +47,7 @@ directions. A missing upstream export or an accidental Octane-only runtime
 export fails the package suite.
 
 The upstream `UseSuspenseQueryOptions` declaration is not exported from
-`@rocicorp/zero/react` 1.8.0, so the Octane root does not add it. The upstream
+`@rocicorp/zero/react` 1.11.0, so the Octane root does not add it. The upstream
 inspector components are private to `zero-react` and are not part of this
 package's public surface.
 
