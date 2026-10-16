@@ -1,4 +1,4 @@
-// Adapted from @rocicorp/zero 1.8.0 under Apache-2.0.
+// Adapted from @rocicorp/zero 1.11.0 under Apache-2.0.
 import {
 	createContext,
 	useContext,
