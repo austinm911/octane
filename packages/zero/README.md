@@ -33,7 +33,7 @@ function App() @{
 
 ## Compatibility
 
-This release targets exactly `@rocicorp/zero@1.8.0`. Import Zero schemas,
+This release targets exactly `@rocicorp/zero@1.11.0`. Import Zero schemas,
 queries, mutations, and the client from `@rocicorp/zero`. Import UI bindings
 from `@octanejs/zero`.
 

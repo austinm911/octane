@@ -1,4 +1,4 @@
-// Adapted from @rocicorp/zero 1.8.0 under Apache-2.0.
+// Adapted from @rocicorp/zero 1.11.0 under Apache-2.0.
 import { resolver } from '@rocicorp/resolver';
 import { use, useRef, useSyncExternalStore } from 'octane';
 import {
@@ -8,7 +8,7 @@ import {
 	DEFAULT_TTL_MS,
 } from '@rocicorp/zero/bindings';
 import { useZero } from './zero-provider.tsrx';
-import { subSlot } from './internal.ts';
+import { deepEqual, subSlot } from './internal.ts';
 import type {
 	AnyMutatorRegistry,
 	BaseDefaultContext,
@@ -30,6 +30,88 @@ import type {
 	TypedView,
 	Zero,
 } from '@rocicorp/zero';
+
+type StableQueryCache = {
+	zero: unknown;
+	context: unknown;
+	/** The last input, so an unchanged one is an identity compare and nothing else. */
+	rawQuery: object;
+	/** The `CustomQuery` a query request names; undefined for a plain query. */
+	customQuery: unknown;
+	args: ReadonlyJSONValue | undefined;
+	// oxlint-disable-next-line @typescript-eslint/no-explicit-any
+	q: Query<any, any, any>;
+};
+
+/**
+ * Resolves a query request against the Zero context, reusing the previous
+ * result while the request means the same thing.
+ *
+ * Interning already makes an unchanged *plain* query come back as the same
+ * object, so this is aimed at the query-request form -- `queries.issue({id})`
+ * -- where every render allocates a fresh request and `addContextToQuery`
+ * re-runs the definition, including argument validation.
+ *
+ * A request resolves to the previous query when it names the same
+ * `CustomQuery`, the same context, and deep-equal args. Those are exactly the
+ * inputs the definition is allowed to depend on: a named query is re-derived
+ * on the server from its name and args, so it has to be a pure function of
+ * them, or client and server would build different queries.
+ *
+ * The ref is written during render. That is safe because it is a pure cache:
+ * an entry is derived only from the inputs, so a discarded render leaves it
+ * valid either way.
+ */
+function useStableQuery<
+	TTable extends keyof TSchema['tables'] & string,
+	TInput extends ReadonlyJSONValue | undefined,
+	TOutput extends ReadonlyJSONValue | undefined,
+	TSchema extends BaseDefaultSchema,
+	TReturn,
+	TContext extends BaseDefaultContext,
+>(
+	query: QueryOrQueryRequest<TTable, TInput, TOutput, TSchema, TReturn, TContext> | Falsy,
+	zero: Zero<TSchema, undefined, TContext>,
+	slot: symbol | undefined,
+): Query<TTable, TSchema, TReturn> | undefined {
+	const cacheRef = useRef<StableQueryCache | undefined>(undefined, slot);
+
+	// Deliberately kept rather than cleared: a query toggled off and back on
+	// reuses what it had.
+	if (!query) {
+		return undefined;
+	}
+
+	const cache = cacheRef.current;
+	if (cache && cache.zero === zero) {
+		if (cache.rawQuery === query) {
+			return cache.q as Query<TTable, TSchema, TReturn>;
+		}
+		if (
+			'query' in query &&
+			cache.customQuery === query.query &&
+			cache.context === zero.context &&
+			deepEqual(cache.args, query.args)
+		) {
+			// Same meaning, new wrapper object: remember it so the next render is
+			// the identity compare above.
+			cache.rawQuery = query;
+			return cache.q as Query<TTable, TSchema, TReturn>;
+		}
+	}
+
+	const q = addContextToQuery(query, zero.context);
+	const isRequest = 'query' in query;
+	cacheRef.current = {
+		zero,
+		context: zero.context,
+		rawQuery: query,
+		customQuery: isRequest ? query.query : undefined,
+		args: isRequest ? query.args : undefined,
+		q,
+	};
+	return q;
+}
 
 export type QueryResult<TReturn> = readonly [HumanReadable<TReturn>, QueryResultDetails & {}];
 
@@ -57,10 +139,11 @@ export type UseSuspenseQueryOptions = UseQueryOptions & {
 	 * Whether to suspend until:
 	 * - 'partial': the query has partial results (partial array or defined
 	 *   value for singular results) which may be of result type 'unknown',
-	 *   or the query result type is 'complete' (in which case results may be
-	 *   empty).  This is useful for suspending until there are partial
-	 *   optimistic local results, or the query has completed loading from the
-	 *   server.
+	 *   or the query result type is 'complete' or 'cached' (in which case
+	 *   results may be empty: a server-confirmed empty answer, from this
+	 *   connection or a previous one, is something to render). This is useful
+	 *   for suspending until there are partial optimistic local results, or
+	 *   the query has completed loading from the server.
 	 * - 'complete': the query result type is 'complete'.
 	 *
 	 * Default is 'partial'.
@@ -120,7 +203,7 @@ export function useQuery<
 	const zero = useZero<TSchema, undefined, TContext>();
 
 	// When query is falsy, use disabled subscriber/snapshot to maintain hook order
-	const q = query ? addContextToQuery(query, zero.context) : undefined;
+	const q = useStableQuery(query, zero, subSlot(slot, 'query:stable'));
 	const view = q ? viewStore.getView(zero, q, enabled, ttl) : undefined;
 
 	// https://react.dev/reference/react/useSyncExternalStore
@@ -180,13 +263,13 @@ export function useSuspenseQuery<
 	if (typeof options === 'boolean') {
 		enabled = options;
 	} else if (options) {
-		({ enabled = true, ttl = DEFAULT_TTL_MS, suspendUntil = 'complete' } = options);
+		({ enabled = true, ttl = DEFAULT_TTL_MS, suspendUntil = 'partial' } = options);
 	}
 
 	const zero = useZero<TSchema, undefined, TContext>();
 
 	// When query is falsy, use disabled subscriber/snapshot to maintain hook order
-	const q = query ? addContextToQuery(query, zero.context) : undefined;
+	const q = useStableQuery(query, zero, subSlot(slot, 'suspense:stable'));
 	const view = q ? viewStore.getView(zero, q, enabled, ttl) : undefined;
 
 	// https://react.dev/reference/react/useSyncExternalStore
@@ -267,6 +350,7 @@ const emptyArray: unknown[] = [];
 const disabledSubscriber = () => () => {};
 
 const resultTypeUnknown = { type: 'unknown' } as const;
+const resultTypeCached = { type: 'cached' } as const;
 const resultTypeComplete = { type: 'complete' } as const;
 const resultTypeError = { type: 'error' } as const;
 
@@ -274,9 +358,11 @@ const disabledQuerySnapshot = [undefined, resultTypeUnknown] as const;
 const getDisabledSnapshot = () => disabledQuerySnapshot;
 
 const emptySnapshotSingularUnknown = [undefined, resultTypeUnknown] as const;
+const emptySnapshotSingularCached = [undefined, resultTypeCached] as const;
 const emptySnapshotSingularComplete = [undefined, resultTypeComplete] as const;
 const emptySnapshotSingularErrorUnknown = [undefined, resultTypeError] as const;
 const emptySnapshotPluralUnknown = [emptyArray, resultTypeUnknown] as const;
+const emptySnapshotPluralCached = [emptyArray, resultTypeCached] as const;
 const emptySnapshotPluralComplete = [emptyArray, resultTypeComplete] as const;
 const emptySnapshotErrorUnknown = [emptyArray, resultTypeError] as const;
 
@@ -308,6 +394,8 @@ function getSnapshot<TReturn>(
 				return emptySnapshotSingularComplete as unknown as QueryResult<TReturn>;
 			case 'unknown':
 				return emptySnapshotSingularUnknown as unknown as QueryResult<TReturn>;
+			case 'cached':
+				return emptySnapshotSingularCached as unknown as QueryResult<TReturn>;
 		}
 	}
 
@@ -322,6 +410,8 @@ function getSnapshot<TReturn>(
 				return emptySnapshotPluralComplete as unknown as QueryResult<TReturn>;
 			case 'unknown':
 				return emptySnapshotPluralUnknown as unknown as QueryResult<TReturn>;
+			case 'cached':
+				return emptySnapshotPluralCached as unknown as QueryResult<TReturn>;
 		}
 	}
 
@@ -343,6 +433,8 @@ function getSnapshot<TReturn>(
 			return [data, resultTypeComplete];
 		case 'unknown':
 			return [data, resultTypeUnknown];
+		case 'cached':
+			return [data, resultTypeCached];
 	}
 }
 
@@ -412,7 +504,12 @@ type AnyViewWrapper = ViewWrapper<any, any, any, any, any>;
  * Swapping `useState` to `useRef` has similar problems.
  */
 export class ViewStore {
-	#views = new Map<string, AnyViewWrapper>();
+	/**
+	 * Client id, then query hash. Nested rather than keyed by the two joined
+	 * together, because both halves are strings V8 has already hashed: `hash()`
+	 * is memoized on an interned query, and it folds in the query's format.
+	 */
+	#views = new Map<string, Map<string, AnyViewWrapper>>();
 
 	getView<
 		TTable extends keyof TSchema['tables'] & string,
@@ -448,18 +545,30 @@ export class ViewStore {
 			};
 		}
 
-		const hash = qi.hash() + JSON.stringify(qi.format) + zero.clientID;
-		let existing = this.#views.get(hash);
+		const { clientID } = zero;
+		const hash = qi.hash();
+		let byHash = this.#views.get(clientID);
+		let existing = byHash?.get(hash);
 		if (!existing) {
 			existing = new ViewWrapper(q, zero, ttl, (view) => {
-				const currentView = this.#views.get(hash);
+				const views = this.#views.get(clientID);
+				const currentView = views?.get(hash);
 				if (currentView && currentView !== view) {
 					// we replaced the view with a new one already.
 					return;
 				}
-				this.#views.delete(hash);
+				views?.delete(hash);
+				if (views?.size === 0) {
+					// Nothing is left for this client, so drop its map rather than
+					// keeping one per client id the page has ever seen.
+					this.#views.delete(clientID);
+				}
 			});
-			this.#views.set(hash, existing);
+			if (!byHash) {
+				byHash = new Map();
+				this.#views.set(clientID, byHash);
+			}
+			byHash.set(hash, existing);
 		} else {
 			existing.updateTTL(ttl);
 		}
@@ -515,6 +624,16 @@ class ViewWrapper<
 	readonly #singular: boolean;
 	#destroyTimer: ReturnType<typeof setTimeout> | undefined;
 
+	// Inputs of the previous #onData call. When a view flush delivers
+	// reference-identical data with the same resultType and error, the previous
+	// snapshot tuple is kept and subscribers are not notified: a fresh tuple
+	// would defeat useSyncExternalStore's Object.is bailout. #lastResultType
+	// doubles as the "has fired before" sentinel (data and error may both
+	// legitimately be undefined).
+	#lastData: Immutable<HumanReadable<TReturn>> | undefined;
+	#lastResultType: ResultType | undefined;
+	#lastError: ErroredQuery | undefined;
+
 	constructor(
 		query: Query<TTable, TSchema, TReturn>,
 		zero: Pick<Zero<TSchema, undefined, TContext>, 'materialize'>,
@@ -536,10 +655,26 @@ class ViewWrapper<
 		resultType: ResultType,
 		error?: ErroredQuery,
 	) => {
-		// applyChange now returns immutable data structures, so no deep clone needed.
-		// Unchanged rows preserve their object identity for React.memo optimization.
-		const data = snap as HumanReadable<TReturn>;
-		this.#snapshot = getSnapshot(this.#singular, data, resultType, this.#retry, error);
+		const wasCached = this.#snapshot[1].type === 'cached';
+		const changed =
+			this.#lastResultType === undefined ||
+			this.#lastData !== snap ||
+			this.#lastResultType !== resultType ||
+			this.#lastError !== error;
+		this.#lastData = snap;
+		this.#lastResultType = resultType;
+		this.#lastError = error;
+
+		if (changed) {
+			// applyChange now returns immutable data structures, so no deep clone needed.
+			// Unchanged rows preserve their object identity for memoization.
+			const data = snap as HumanReadable<TReturn>;
+			this.#snapshot = getSnapshot(this.#singular, data, resultType, this.#retry, error);
+		}
+
+		// The resolver bookkeeping runs even when unchanged: after a
+		// destroy/re-materialize cycle the resolvers are fresh but the new view
+		// may deliver the same data/resultType as before the destroy.
 		if (resultType === 'complete' || resultType === 'error') {
 			this.#complete = true;
 			this.#completeResolver.resolve();
@@ -547,17 +682,27 @@ class ViewWrapper<
 			this.#nonEmptyResolver.resolve();
 		}
 
-		if (
-			this.#singular
-				? this.#snapshot[0] !== undefined
-				: (this.#snapshot[0] as unknown[]).length !== 0
-		) {
+		const hasData = this.#singular
+			? this.#snapshot[0] !== undefined
+			: (this.#snapshot[0] as unknown[]).length !== 0;
+		// A 'cached' result is the server-confirmed answer from a previous
+		// session, so even an empty one is something to render. It never
+		// satisfies `complete`; only a confirmation on this connection does.
+		if (resultType === 'cached' || hasData) {
 			this.#nonEmpty = true;
 			this.#nonEmptyResolver.resolve();
+		} else if (wasCached && resultType === 'unknown') {
+			// The cached claim was revoked (the got key was evicted before this
+			// connection confirmed the query) and the view is empty: there is
+			// nothing to render again until rows or a confirmation arrive.
+			this.#nonEmpty = false;
+			this.#nonEmptyResolver = resolver();
 		}
 
-		for (const internals of this.#reactInternals) {
-			internals();
+		if (changed) {
+			for (const internals of this.#reactInternals) {
+				internals();
+			}
 		}
 	};
 
@@ -627,6 +772,13 @@ class ViewWrapper<
 	};
 
 	updateTTL(ttl: TTL): void {
+		// `getView` calls this on every render, and forwarding an unchanged TTL
+		// reaches the query manager, which re-derives the query's id from its AST
+		// to find the entry. A change in how the same duration is spelled ('60s'
+		// vs 60000) is still a change here and still propagates.
+		if (this.#ttl === ttl) {
+			return;
+		}
 		this.#ttl = ttl;
 		this.#view?.updateTTL(ttl);
 	}

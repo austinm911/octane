@@ -41,8 +41,21 @@ function createZero(clientID: string) {
 	};
 }
 
-function emit(view: MockView, rows: readonly unknown[]) {
-	for (const listener of view.listeners) listener(rows, 'unknown');
+function emit(
+	view: MockView,
+	rows: readonly unknown[],
+	resultType: ResultType = 'unknown',
+	error?: ErroredQuery,
+) {
+	for (const listener of view.listeners) listener(rows, resultType, error);
+}
+
+function materialized(store: ViewStore, hash = 'query') {
+	const { zero, materialize } = createZero('client');
+	const view = store.getView(zero, createQuery(hash), true, 'forever');
+	const unsubscribe = view.subscribeReactInternals(() => {});
+	const mock: MockView = materialize.mock.results[0]!.value;
+	return { zero, view, mock, unsubscribe };
 }
 
 describe('Zero view lifecycle', () => {
@@ -86,5 +99,74 @@ describe('Zero view lifecycle', () => {
 		expect(second).not.toBe(first);
 		expect(second.getSnapshot()[0]).toEqual([]);
 		expect(materialize).toHaveBeenCalledTimes(2);
+	});
+});
+
+describe('Zero 1.11 result handling', () => {
+	beforeEach(() => vi.useFakeTimers());
+	afterEach(() => vi.useRealTimers());
+
+	// Adapted from use-query.test.tsx at @rocicorp/zero 1.11.0.
+	test('an unchanged ttl is not forwarded to the view', () => {
+		const store = new ViewStore();
+		const { zero, mock } = materialized(store);
+		const updateTTL = vi.spyOn(mock, 'updateTTL');
+		store.getView(zero, createQuery('query'), true, 'forever');
+		expect(updateTTL).not.toHaveBeenCalled();
+		store.getView(zero, createQuery('query'), true, '2s');
+		expect(updateTTL).toHaveBeenCalledWith('2s');
+	});
+
+	// Adapted from use-query.test.tsx at @rocicorp/zero 1.11.0.
+	test('empty cached snapshots are stable and satisfy nonEmpty but not complete', () => {
+		const store = new ViewStore();
+		const { view, mock } = materialized(store);
+		emit(mock, [], 'cached');
+		const first = view.getSnapshot();
+		expect(first).toEqual([[], { type: 'cached' }]);
+		emit(mock, [], 'cached');
+		expect(view.getSnapshot()).toBe(first);
+		expect(view.nonEmpty).toBe(true);
+		expect(view.complete).toBe(false);
+		emit(mock, [{ id: '1' }], 'complete');
+		expect(view.complete).toBe(true);
+	});
+
+	// Adapted from use-query.test.tsx at @rocicorp/zero 1.11.0.
+	test('a revoked empty cached result suspends again', async () => {
+		const store = new ViewStore();
+		const { view, mock } = materialized(store);
+		emit(mock, [], 'cached');
+		emit(mock, [], 'unknown');
+		expect(view.nonEmpty).toBe(false);
+		let resolved = false;
+		void view.waitForNonEmpty().then(() => {
+			resolved = true;
+		});
+		await Promise.resolve();
+		expect(resolved).toBe(false);
+		emit(mock, [{ id: '1' }], 'unknown');
+		await Promise.resolve();
+		expect(resolved).toBe(true);
+	});
+
+	// Adapted from use-query.test.tsx at @rocicorp/zero 1.11.0.
+	test('the same data reference keeps snapshot identity and does not notify', () => {
+		const store = new ViewStore();
+		const { zero, materialize } = createZero('client');
+		const view = store.getView(zero, createQuery('query'), true, 'forever');
+		const notify = vi.fn();
+		const unsubscribe = view.subscribeReactInternals(notify);
+		const mock: MockView = materialize.mock.results[0]!.value;
+		const rows = [{ id: '1' }];
+		emit(mock, rows);
+		const first = view.getSnapshot();
+		emit(mock, rows);
+		expect(view.getSnapshot()).toBe(first);
+		expect(notify).toHaveBeenCalledTimes(1);
+		emit(mock, rows, 'complete');
+		expect(view.getSnapshot()).not.toBe(first);
+		expect(notify).toHaveBeenCalledTimes(2);
+		unsubscribe();
 	});
 });
