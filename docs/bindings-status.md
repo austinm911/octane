@@ -3,7 +3,7 @@
 <!-- GENERATED FILE — do not edit. Edit packages/<name>/status.json and
      regenerate with `pnpm bindings:status`. -->
 
-The central status table for the 119 `@octanejs/*` framework bindings.
+The central status table for the 120 `@octanejs/*` framework bindings.
 Each row is sourced from that package's `packages/<name>/status.json` — the
 machine-readable status block maintained next to the code it describes — merged
 with the version in its `package.json`. CI runs `pnpm bindings:status:check`,
@@ -136,6 +136,7 @@ supported surface and known test coverage described for that package.
 | [`@octanejs/xstate-store`](#octanejsxstate-store) | `@xstate/store-react@2.0.0` | Complete @xstate/store-react 2.0.0 export surface — `useSelector`, `useStore`, `useAtom`, `useAtomState`, and `createStoreHook` — ported onto Octane hooks, plus the full `@xstate/store@4.2.3` core re-exported unchanged (`createStore`, `createAtom`, `fromStore`, `shallowEqual`, and every type), exactly as upstream re-exports it. | Upstream calls hooks inside `if` branches in `useSelector` and `useAtom`, which React tolerates only because the branch is stable per call site. Octane keys hooks by call site rather than call order, so the shape is legal here; if a call site does flip branches, Octane keeps independent hook cells per branch and unsubscribes the abandoned one instead of corrupting hook order; `useSyncExternalStore` does not re-read `getSnapshot` at commit when the rendered value was unchanged. Octane's synchronous renderer closes the concurrent-interleaving window React guards there; any store that notifies is unaffected; During server rendering `getServerSnapshot` is optional and falls back to `getSnapshot`, where React throws. Every hook here supplies one | Supported: selectors, stores, and atoms read their current snapshot during server rendering through `getServerSnapshot`, and the binding has no browser-only initialization. | 2026-08-15 |
 | [`@octanejs/xyflow`](#octanejsxyflow) | `@xyflow/react@12.11.2` | ReactFlow, ReactFlowProvider, Handle, hooks (useReactFlow, useNodes, useEdges, …), change helpers, and node/edge utilities from @xyflow/react@12.11.2. | Octane components are functions rather than forwardRef objects (ReactFlow, ReactFlowProvider, Handle) | Store/provider render on server; canvas interactions are client-driven like upstream. | 2026-08-07 |
 | [`@octanejs/zag`](#octanejszag) | `@zag-js/react@1.42.0` | Complete port of the @zag-js/react@1.42.0 public adapter surface: useMachine, normalizeProps, Portal, the @zag-js/core mergeProps re-export, and the framework useSyncExternalStore re-export. The framework-agnostic @zag-js/core, @zag-js/store, @zag-js/types, and @zag-js/utils packages are reused unchanged. | normalizeProps rewrites React-style text-entry onChange to native onInput for input (non-checkbox/radio) and textarea hosts; select and checkbox/radio keep native onChange. Upstream normalizeProps is an identity transform and has no suite coverage for this export; Portal container refs use Octane's structural `{ current: HTMLElement \| null }` ref shape rather than React.RefObject; runtime behavior is unchanged; Compiled Octane children are portalled as one lazy children block so their component scope is preserved; ordinary value children retain upstream's per-child portal behavior; React StrictMode double-invoke suite cases stay pristine-only; Octane does not double-invoke effects, so those identities are not adapted one-for-one | Supported and tested: useMachine exposes its initial state and bindable context during server rendering, effects remain deferred, and Portal renders children in place without browser globals. | 2026-08-09 |
+| [`@octanejs/zero`](#octanejszero) | `@rocicorp/zero@1.11.0` | Complete port of the public @rocicorp/zero/react 1.11.0 runtime and type surface. The framework-neutral Zero client is reused from @rocicorp/zero. | useSuspenseQuery suspends through Octane's use() implementation instead of React's use() implementation details; Octane does not perform React StrictMode's development-only double mount; Zero's delayed view cleanup remains compatible with rapid unmount and remount cycles | Matches upstream 1.11.0: externally supplied clients can provide context during SSR, while providers constructed from options create Zero only in a client-side passive effect. Zero query data loading during SSR is not claimed. | 2026-10-16 |
 | [`@octanejs/zustand`](#octanejszustand) | `zustand@5.0.15` | Complete 1:1 port: the framework-agnostic vanilla store is reused verbatim; `create`/`useStore`, `shallow`/`useShallow`, the traditional equality-fn variants, and all middleware (persist, devtools, subscribeWithSelector, combine, redux). | none known | No SSR-specific surface; no dedicated SSR tests. | 2026-08-02 |
 
 ## @octanejs/alien-signals
@@ -2294,6 +2295,21 @@ Scope/evidence last checked: 2026-08-09.
 - Published dependencies and source contain no React or react-dom imports.
 
 See also: [`packages/zag/UPSTREAM.md`](../packages/zag/UPSTREAM.md)
+
+## @octanejs/zero
+
+[`packages/zero`](../packages/zero) `0.0.1` — ports `@rocicorp/zero@1.11.0`. Status data: [`packages/zero/status.json`](../packages/zero/status.json).
+
+Complete port of the public @rocicorp/zero/react 1.11.0 runtime and type surface. The framework-neutral Zero client is reused from @rocicorp/zero.
+
+Known divergences:
+
+- useSuspenseQuery suspends through Octane's use() implementation instead of React's use() implementation details.
+- Octane does not perform React StrictMode's development-only double mount; Zero's delayed view cleanup remains compatible with rapid unmount and remount cycles.
+
+SSR / hydration: Matches upstream 1.11.0: externally supplied clients can provide context during SSR, while providers constructed from options create Zero only in a client-side passive effect. Zero query data loading during SSR is not claimed.
+
+Scope/evidence last checked: 2026-10-16.
 
 ## @octanejs/zustand
 

@@ -1216,6 +1216,19 @@ export function App(props: { name: string; link?: { title: string } }) @{
 		}
 	});
 
+	it.each(['export type { Shape } from "./types";', 'export type * from "./types";'])(
+		'preserves local declaration scopes after %s',
+		(exportDeclaration) => {
+			const source = `${exportDeclaration}
+function First() @{ const value = 1; <span>{value}</span> }
+function Second() @{ const value = 2; <span>{value}</span> }`;
+			expect(compileToVolarMappings(source, 'App.tsrx').errors).toEqual([]);
+			const duplicate = `${exportDeclaration}
+function First() @{ const value = 1; const value = 2; <span>{value}</span> }`;
+			expect(compileToVolarMappings(duplicate, 'App.tsrx').errors).toHaveLength(1);
+		},
+	);
+
 	it('leaves conflicts with a type-only import to the type checker', () => {
 		// Parsing accepts a value declaration named like a type-only import; the
 		// type checker still rejects value use and duplicate imports.

@@ -2,6 +2,25 @@ diff --git a/index.js b/index.js
 index fe6763f19ad149d169986bbd4f0c8ff218106962..95c55dcc4b174d850f97654832ac6c558ce250a6 100644
 --- a/index.js
 +++ b/index.js
+@@ -3954,7 +3954,9 @@ function tsPlugin(options) {
+           }
+           this.next();
+           if (this.eat(tt.star)) {
+-            return this.parseExportAllDeclaration(node, exports);
++            const declaration = this.parseExportAllDeclaration(node, exports);
++            this.importOrExportOuterKind = void 0;
++            return declaration;
+           }
+           if (this.eat(tt._default)) {
+             this.checkExport(exports, "default", this.lastTokStart);
+@@ -3990,6 +3992,7 @@ function tsPlugin(options) {
+             }
+             this.semicolon();
+           }
++          this.importOrExportOuterKind = void 0;
+           return this.finishNode(node, "ExportNamedDeclaration");
+         }
+       }
 @@ -5484,7 +5484,10 @@ function tsPlugin(options) {
            node[rightOfAsKey] = this.copyNode(node[leftOfAsKey]);
          }

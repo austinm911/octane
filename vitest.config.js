@@ -1063,6 +1063,24 @@ export default defineConfig({
 			},
 			...scopedSignalsProjects(octane, configDefaults.exclude),
 			{
+				test: {
+					name: 'zero',
+					include: ['packages/zero/tests/conformance/**/*.test.ts'],
+					environment: 'jsdom',
+					setupFiles: ['packages/octane/tests/_per-test-setup.ts'],
+					globals: false,
+				},
+				plugins: [octane()],
+				resolve: {
+					alias: [
+						{
+							find: /^@octanejs\/zero$/,
+							replacement: resolve(import.meta.dirname, 'packages/zero/src/index.ts'),
+						},
+					],
+				},
+			},
+			{
 				// All zustand conformance (including the unstable-selector divergence)
 				// stays in ordinary shards; only differential parity.test.ts is
 				// react-parity-owned.

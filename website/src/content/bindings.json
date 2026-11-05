@@ -117,6 +117,11 @@
         "packageName": "@octanejs/tanstack-query",
         "title": "TanStack Query",
         "tags": ["server state", "cache", "data fetching"]
+      },
+      {
+        "packageName": "@octanejs/zero",
+        "title": "Rocicorp Zero",
+        "tags": ["local first", "database", "sync"]
       }
     ]
   },

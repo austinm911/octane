@@ -7,6 +7,11 @@ The package reuses the framework-neutral `@rocicorp/zero` client. It ports the
 provider, query, connection-state, and online-state bindings from
 `@rocicorp/zero/react` to Octane hooks.
 
+```sh
+npm install @octanejs/zero @rocicorp/zero
+pnpm add @octanejs/zero @rocicorp/zero
+```
+
 ```tsrx
 import { Zero } from '@rocicorp/zero';
 import { ZeroProvider, useQuery, useZero } from '@octanejs/zero';

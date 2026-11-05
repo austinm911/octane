@@ -159,10 +159,15 @@ describe('useQuery', () => {
 		await Promise.resolve();
 		await nextPaint();
 
-		expect(result.find('#sequential-suspense-query-values').textContent).toBe(
-			'1/complete/1/complete',
-		);
-		expect(result.findAll('#sequential-suspense-query-pending')).toHaveLength(0);
+		await vi.waitFor(() => {
+			expect(result.find('#sequential-suspense-query-values').textContent).toBe(
+				'1/complete/1/complete',
+			);
+			expect(
+				result.find('#sequential-suspense-query-values').getAttribute('style') ?? '',
+			).not.toContain('display: none');
+			expect(result.findAll('#sequential-suspense-query-pending')).toHaveLength(0);
+		});
 		expect(result.findAll('#sequential-suspense-query-error')).toHaveLength(0);
 		result.unmount();
 	});
